@@ -1,0 +1,144 @@
+﻿<!-- Copyright (c) Microsoft Corporation.
+     Licensed under the MIT License. -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset=utf-8>
+    <title>Web-based Video Player Sample</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+    <!-- This library is used to redirect JavaScript console logs to the Visual Studio console.
+         This is useful for Visual Studio 2019 and later, as they lack built-in debugging tools
+         for the original WebView control.
+         If you are using Visual Studio 2017, you are better off using the built-in Script
+         debugging tools instead, and you should comment out this line. -->
+    <script src="libs/redirectconsole-1.0.0.0.js"></script>
+    <!-- This library allows an Xbox controller or the arrow keys to navigate the UI.
+         Source: https://github.com/Microsoft/TVHelpers -->
+    <script src="libs/directionalnavigation-1.0.0.0.js"></script>
+    <script>
+        var mediaElement;
+        var playPauseBtn;
+
+        document.addEventListener("DOMContentLoaded", function () {
+            mediaElement = document.getElementById("MediaElement");
+            playPauseBtn = document.getElementById("PlayPauseBtn");
+            playPauseBtn.focus();
+            updateVolumeText();
+            console.log("Media player is ready");
+        });
+
+        // The directionalnavigation library included above ensures that gamepad button presses will
+        // fire keydown events. If you decide not to use that library, you'll need to additionally
+        // include this line to get keydown events from the gamepad:
+        // window.navigator.gamepadInputEmulation = "keyboard";
+        document.addEventListener("keydown", onKeyDown);
+
+        // Shows or hides the media name and controls
+        function setUIVisibility(shouldShow) {
+            let chrome = document.getElementById("MediaChrome");
+            if (chrome.hidden != !shouldShow) {
+                chrome.hidden = !shouldShow;
+                if (shouldShow) {
+                    playPauseBtn.focus();
+                }
+            }
+        }
+
+        // Event handlers
+        // ----------------------
+        function onPlayStateChanged() {
+            setUIVisibility(mediaElement.paused || mediaElement.ended);
+            updatePlayPauseBtnText();
+            updateResetBtnText();
+        }
+        function onProgressChanged() {
+            let progressBar = document.getElementById("ProgressBar");
+            let percent = Math.floor((100 / mediaElement.duration) * mediaElement.currentTime);
+            progressBar.value = percent;
+            progressBar.innerText = `${percent}%`;
+        }
+        function onKeyDown(e) {
+            setUIVisibility(true);
+        }
+
+        // These functions are called when the user presses media control buttons
+        // ----------------------
+        function togglePlayPause() {
+            if (mediaElement.paused || mediaElement.ended) {
+                mediaElement.play();
+            } else {
+                mediaElement.pause();
+            }
+        }
+        function resetPlayback() {
+            mediaElement.pause();
+            mediaElement.currentTime = 0;
+            playPauseBtn.focus();
+            updateResetBtnText();
+        }
+        function addVolume(amount) {
+            // Clamp between 0 and 1
+            let newVolume = Math.max(0, Math.min(mediaElement.volume + amount, 1));
+            mediaElement.volume = parseFloat(newVolume).toFixed(1);
+            updateVolumeText();
+        }
+        function toggleMute() {
+            mediaElement.muted = !mediaElement.muted;
+            updateMuteBtnText();
+            updateVolumeText();
+        }
+
+        // Functions to update the text of controls to match the video state
+        // ----------------------
+        function updateResetBtnText() {
+            let resetBtn = document.getElementById("ResetBtn");
+            resetBtn.innerText = mediaElement.ended ? "" : "⏹";
+            resetBtn.title = mediaElement.ended ? "Restart" : "Stop";
+        }
+        function updatePlayPauseBtnText() {
+            playPauseBtn.innerText = (mediaElement.paused || mediaElement.ended) ? "▶" : "⏸";
+            playPauseBtn.title = (mediaElement.paused || mediaElement.ended) ? "Play" : "Pause";
+        }
+        function updateMuteBtnText() {
+            let muteBtn = document.getElementById("ToggleMuteBtn");
+            muteBtn.innerText = mediaElement.muted ? "" : "";
+            muteBtn.title = mediaElement.muted ? "Unmute" : "Mute";
+        }
+        function updateVolumeText() {
+            let volume = document.getElementById("Volume");
+            if (mediaElement.muted) {
+                volume.innerText = 0;
+            } else {
+                volume.innerText = parseFloat(mediaElement.volume * 100).toFixed(0);
+            }
+        }
+    </script>
+</head>
+<body>
+    <video id="MediaElement" preload="metadata" onplay="onPlayStateChanged()" onpause="onPlayStateChanged()" ontimeupdate="onProgressChanged()">
+        <source src="https://mediaplatstorage1.blob.core.windows.net/windows-universal-samples-media/sintel_trailer-480p.mp4" type="video/mp4">
+    </video>
+    <div id="MediaChrome">
+        <div class="MediaDecorator" id="TopDecorator">
+            <div id="Filename">Sintel Trailer</div>
+        </div>
+        <div class="MediaDecorator" id="BottomDecorator">
+            <progress id="ProgressBar" min="0" max="100" value="0">0%</progress>
+            <div id="MediaControls">
+                <div id="LeftControls">
+                    <button class="MediaButton" id="PlayPauseBtn" title="Play" onclick="togglePlayPause()">▶</button>
+                    <button class="MediaButton" id="ResetBtn" title="Stop" onclick="resetPlayback()">⏹</button>
+                </div>
+                <div id="RightControls">
+                    <span id="Volume">0</span>
+                    <button class="MediaButton" id="ToggleMuteBtn" title="Mute" onclick="toggleMute()"></button>
+                    <button class="MediaButton" id="VolumeUpBtn" title="Volume Up" onclick="addVolume(0.1)">➕</button>
+                    <button class="MediaButton" id="VolumeDownBtn" title="Volume Down" onclick="addVolume(-0.1)">➖</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

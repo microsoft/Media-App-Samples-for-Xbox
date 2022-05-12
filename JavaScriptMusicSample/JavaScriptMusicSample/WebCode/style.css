@@ -1,0 +1,68 @@
+﻿/* Copyright (c) Microsoft Corporation.
+   Licensed under the MIT License. */
+
+body {
+    background-color: rgb(16, 16, 16);
+    color: rgb(235, 235, 235);
+    font-family: "Segoe UI";
+    font-size: 24pt;
+    overflow: hidden;
+    /* Leave room around the edges of the screen to ensure we draw UI only in the TV-safe area */
+    padding: 54px 96px;
+}
+button {
+    background-color: rgba(235, 235, 235, 0.1);
+    border: 6px solid rgb(16, 16, 16);
+    color: rgb(235, 235, 235);
+    outline: none;
+    padding: 20px;
+}
+button:focus {
+    background-color: rgb(16, 124, 16);
+    border-color: rgba(235, 235, 235, 1);
+}
+progress {
+    width: 100%;
+    color:rgb(16, 124, 16);
+    margin-bottom: 20px;
+}
+button.MediaButton {
+    font-family: "Segoe UI Symbol";
+    font-size: 18pt;
+    width: 100px;
+}
+div.CurrentTrack {
+    color: rgb(16, 124, 16);
+}
+div.CurrentTrack::before {
+    font-family: "Segoe UI Symbol";
+    content: "▶ ";
+}
+#TopDecorator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#MediaControls {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 50px;
+}
+#Title {
+    font-weight: bold;
+    font-size: 28pt;
+}
+#Thumbnail {
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+    margin: 20px;
+}
+#Playlist {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgba(235, 235, 235, 0.25);
+    padding: 25px;
+}

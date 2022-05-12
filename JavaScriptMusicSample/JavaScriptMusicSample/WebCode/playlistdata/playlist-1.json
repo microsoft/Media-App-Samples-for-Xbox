@@ -1,0 +1,34 @@
+﻿{
+  "Tracks": [
+    {
+      "Title": "Unhappy Life Knows Nothing",
+      "Artist": "Computoser",
+      "Id": "101",
+      "Image": "https://raw.githubusercontent.com/microsoft/Windows-universal-samples/main/SharedContent/media/Samples/LandscapeImage1.jpg"
+    },
+    {
+      "Title": "Run Early",
+      "Artist": "Computoser",
+      "Id": "102",
+      "Image": "https://raw.githubusercontent.com/microsoft/Windows-universal-samples/main/SharedContent/media/Samples/LandscapeImage2.jpg"
+    },
+    {
+      "Title": "Joy Goes To Life",
+      "Artist": "Computoser",
+      "Id": "103",
+      "Image": "https://raw.githubusercontent.com/microsoft/Windows-universal-samples/main/SharedContent/media/Samples/LandscapeImage3.jpg"
+    },
+    {
+      "Title": "Silence With Nothing",
+      "Artist": "Computoser",
+      "Id": "104",
+      "Image": "https://raw.githubusercontent.com/microsoft/Windows-universal-samples/main/SharedContent/media/Samples/LandscapeImage4.jpg"
+    },
+    {
+      "Title": "Joy For A Bad Road",
+      "Artist": "Computoser",
+      "Id": "105",
+      "Image": "https://raw.githubusercontent.com/microsoft/Windows-universal-samples/main/SharedContent/media/Samples/LandscapeImage5.jpg"
+    }
+  ]
+}
