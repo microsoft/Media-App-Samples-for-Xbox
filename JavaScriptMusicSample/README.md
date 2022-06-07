@@ -1,4 +1,4 @@
-# Web-based Xbox video app sample
+# Web-based Xbox music app sample
 
 A mini music player app meant to be run on Xbox. The UI is written in HTML and JavaScript running in a full-screen WebView. The app uses a short list of hard-coded tracks rather than a webservice, but may be suitable to use as a jumping-off point for building a more full-featured app. It also utilizes a small JavaScript library which may be independently useful, redirectconsole-1.0.0.0.js, which aids in debugging JavaScript code running in a WebView in versions of Visual Studio greater than 2017.
 
