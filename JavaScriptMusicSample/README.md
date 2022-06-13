@@ -6,7 +6,7 @@ A mini music player app meant to be run on Xbox. The UI is written in HTML and J
 
 This sample runs on the Universal Windows Platform (UWP). 
 
-![Video app screenshot](../Images/MusicAppScreenshot.png)
+![Music app screenshot](../Images/MusicAppScreenshot.png)
 
 ## Features
 
