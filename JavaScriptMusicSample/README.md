@@ -46,22 +46,22 @@ When you next hit Start Debugging (F5) it may ask you for a pairing PIN. This ca
 
 If you're just interested in code snippets for certain APIs and don't want to browse or run the full sample, check out the following files for examples of some highlighted features:
 
-* [App.xaml.cs](JavaScriptMusicSample/App.xaml.cs#L35)
+* [App.xaml.cs](/JavaScriptMusicSample/JavaScriptMusicSample/App.xaml.cs#L35)
     - Disabling mouse mode using `this.RequiresPointerMode = ApplicationRequiresPointerMode.WhenRequested`.
 	- Releasing the UI when the app enters the background in `OnEnteredBackground()`.
 	- Recreating the UI when the app leaves the background in `OnLeavingBackground()`.
-* [MainPage.xaml.cs](JavaScriptMusicSample/MainPage.xaml.cs#L12)
+* [MainPage.xaml.cs](/JavaScriptMusicSample/JavaScriptMusicSample/MainPage.xaml.cs#L12)
 	- Calling `ApplicationView.GetForCurrentView().SetDesiredBoundsMode()` to allow the app to draw all the way to the edges of the screen.
     - Calling `ApplicationViewScaling.TrySetDisableLayoutScaling()` to disable the automatic 2X scaling UWP apps get by default on Xbox.
     - Constructing a `WebView` manually and adding it to the scene once `NavigationCompleted` has fired.
-    - Logging the contents of `ScriptNotify` events to the console. This pairs with [redirectconsole-1.0.0.0.js](JavaScriptMusicSample/WebCode/libs/redirectconsole-1.0.0.0.js) and is useful on Visual Studio versions greater than 2017. On Visual Studio 2017, this can be removed.
-* [MediaPlaybackController.cs](JavaScriptMusicSample.Projected/MediaPlaybackController.cs#L24)
+    - Logging the contents of `ScriptNotify` events to the console. This pairs with [redirectconsole-1.0.0.0.js](/JavaScriptMusicSample/JavaScriptMusicSample/WebCode/libs/redirectconsole-1.0.0.0.js) and is useful on Visual Studio versions greater than 2017. On Visual Studio 2017, this can be removed.
+* [MediaPlaybackController.cs](/JavaScriptMusicSample/JavaScriptMusicSample.Projected/MediaPlaybackController.cs#L24)
     - Using the `[AllowForWeb]` attribute to project a C# class into JavaScript.
 	- Providing an interface for the JavaScript code to interface with `MediaPlayer` so it can manage playback.
-* [music-player.html](JavaScriptMusicSample/WebCode/music-player.html#L8)
+* [music-player.html](/JavaScriptMusicSample/JavaScriptMusicSample/WebCode/music-player.html#L8)
     - Using [directionalnavigation-1.0.0.0.js](JavaScriptMusicSample/WebCode/libs/directionalnavigation-1.0.0.0.js) (which comes from a separate project, [TVHelpers](https://github.com/Microsoft/TVHelpers)) to enable focus navigation using the Xbox controller.
     - Implementing all of the app's UI using HTML5, JavaScript, and CSS.
-* [redirectconsole-1.0.0.0.js](JavaScriptMusicSample/WebCode/libs/redirectconsole-1.0.0.0.js)
+* [redirectconsole-1.0.0.0.js](/JavaScriptMusicSample/JavaScriptMusicSample/WebCode/libs/redirectconsole-1.0.0.0.js)
     - Redirecting `console.log`, `console.info`, `console.warn`, and `console.error` to `window.external.notify` so that it can be caught in C# via the `ScriptNotify` event and logged to the C# console. Note that this is only helpful on versions of Visual Studio greater than 2017; Visual Studio 2017 has comprehensive script debugging tools which are more detailed than simply logging them to the C# console.
 
 ## Trademarks
