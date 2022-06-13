@@ -46,18 +46,42 @@
             }
         }
 
+        // Sends a JSON message to the C# wrapper code to notify it of state changes.
+        function notifyNativeWrapper(message, args = {}) {
+            let payload = {
+                "Message": message,
+                "Args": args
+            };
+            window.external.notify(JSON.stringify(payload));
+        }
+
         // Event handlers
         // ----------------------
         function onPlayStateChanged() {
             setUIVisibility(mediaElement.paused || mediaElement.ended);
             updatePlayPauseBtnText();
             updateResetBtnText();
+
+            // Let the C# code know that playback has changed so it can update the system.
+            if (mediaElement.ended) {
+                notifyNativeWrapper("PlaybackEnded");
+            } else if (mediaElement.paused) {
+                notifyNativeWrapper("PlaybackPaused");
+            } else {
+                notifyNativeWrapper("PlaybackStarted");
+            }
         }
         function onProgressChanged() {
             let progressBar = document.getElementById("ProgressBar");
             let percent = Math.floor((100 / mediaElement.duration) * mediaElement.currentTime);
             progressBar.value = percent;
             progressBar.innerText = `${percent}%`;
+
+            // Inform the C# code of the change in position as well.
+            notifyNativeWrapper("TimeUpdate", {
+                "CurrentTime": mediaElement.currentTime,
+                "Duration": mediaElement.duration
+            });
         }
         function onKeyDown(e) {
             setUIVisibility(true);
@@ -65,11 +89,17 @@
 
         // These functions are called when the user presses media control buttons
         // ----------------------
+        function play() {
+            mediaElement.play();
+        }
+        function pause() {
+            mediaElement.pause();
+        }
         function togglePlayPause() {
             if (mediaElement.paused || mediaElement.ended) {
-                mediaElement.play();
+                play();
             } else {
-                mediaElement.pause();
+                pause();
             }
         }
         function resetPlayback() {
