@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="MainPage.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="App.idl" />
+    <Midl Include="MainPage.idl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="App.cpp" />
+    <ClCompile Include="MainPage.cpp" />
+    <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\Wide310x150Logo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\StoreLogo.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Square150x150Logo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Square44x44Logo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\SplashScreen.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\LockScreenLogo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="..\..\..\WebCode\favicon.ico">
+      <Filter>WebCode</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Assets">
+      <UniqueIdentifier>{e48dc53e-40b1-40cb-970a-f89935452892}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WebCode">
+      <UniqueIdentifier>{975d0d45-92d8-4395-8830-b791cdf704f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WebCode\libs">
+      <UniqueIdentifier>{b5b45295-1db7-4e0a-ac0b-5b91dcb1ee33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WebCode\playlistdata">
+      <UniqueIdentifier>{519da66f-cbb7-420a-93c7-86220ce63aeb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PropertySheet.props" />
+    <None Include="..\..\..\WebCode\style.css">
+      <Filter>WebCode</Filter>
+    </None>
+    <None Include="..\..\..\WebCode\uwpdisplaymode.js">
+      <Filter>WebCode</Filter>
+    </None>
+    <None Include="..\..\..\WebCode\video-player.html">
+      <Filter>WebCode</Filter>
+    </None>
+    <None Include="..\..\..\WebCode\playlistdata\video-playlist.json">
+      <Filter>WebCode\playlistdata</Filter>
+    </None>
+    <None Include="..\..\..\WebCode\libs\directionalnavigation-1.0.0.0.js">
+      <Filter>WebCode\libs</Filter>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+</Project>

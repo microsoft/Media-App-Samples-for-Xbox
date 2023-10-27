@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap mp rescap">
+
+  <Identity
+    Name="0843fc06-6654-434e-bf9c-e248e6a923be"
+    Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
+    Version="1.0.0.0" />
+
+  <mp:PhoneIdentity PhoneProductId="0843fc06-6654-434e-bf9c-e248e6a923be" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+
+  <Properties>
+    <DisplayName>JavaScriptVideoSample</DisplayName>
+    <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.0.0" MaxVersionTested="10.0.0.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="x-generate"/>
+  </Resources>
+
+  <Applications>
+    <Application Id="App"
+      Executable="$targetnametoken$.exe"
+      EntryPoint="JavaScriptVideoSample.App">
+      <uap:VisualElements
+        DisplayName="JavaScriptVideoSample"
+        Square150x150Logo="Assets\Square150x150Logo.png"
+        Square44x44Logo="Assets\Square44x44Logo.png"
+        Description="JavaScript Video Sample"
+        BackgroundColor="transparent">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"/>
+        <uap:SplashScreen Image="Assets\SplashScreen.png" />
+      </uap:VisualElements>
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <Capability Name="internetClient" />
+    <!-- The "hevcPlayback" capability grants the app the ability to play 4K video content on Xbox.
+         This sample doesn't actually play any 4K content; the capability is listed here for
+         demonstration purposes. If your app does not play 4K content, you should delete this line
+         from the manifest.
+         
+         Usage of this capability requires approval from Microsoft. Work with your Microsoft
+         business representative if you need this capability.
+    -->
+    <rescap:Capability Name="hevcPlayback" />
+    <!-- This capability grants the app the ability to play PlayReady content. This sample doesn't
+         actually use any PlayReady content; the capability is listed here for demonstration
+         purposes. If your app needs to be able to play PlayReady content, you will need to
+         uncomment this line. Otherwise, you can delete this line from the manifest.
+         For more details on PlayReady, see:
+         https://learn.microsoft.com/en-us/windows/uwp/audio-video-camera/playready-client-sdk
+    -->
+    <!-- <DeviceCapability Name="6a7e5907-885c-4bcb-b40a-073c067bd3d5"/> -->
+  </Capabilities>
+</Package>

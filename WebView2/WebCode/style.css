@@ -1,0 +1,108 @@
+/* Copyright (c) Microsoft Corporation.
+   Licensed under the MIT License. */
+
+body {
+    background-color: rgb(16, 16, 16);
+    color: rgb(235, 235, 235);
+    font-family: "Segoe UI";
+    font-size: 24pt;
+    overflow: hidden;
+    /* Leave room around the edges of the screen to ensure we draw UI only in the TV-safe area */
+    padding: 54px 96px;
+}
+button {
+    background-color: rgba(235, 235, 235, 0.1);
+    border: 6px solid rgb(16, 16, 16);
+    color: rgb(235, 235, 235);
+    outline: none;
+    padding: 20px;
+}
+button:focus {
+    background-color: rgb(16, 124, 16);
+    border-color: rgba(235, 235, 235, 1);
+}
+button:disabled {
+    color: rgb(100, 100, 100);
+}
+video {
+    position: fixed;
+    width: 100%;
+    top: 50%;
+    right: 0;
+    transform: translate(0, -50%);
+    z-index: -1;
+}
+progress {
+    width: 100%;
+    color:rgb(16, 124, 16);
+    margin-bottom: 20px;
+}
+button.MediaButton {
+    font-family: "Segoe UI Symbol";
+    font-size: 20pt;
+    width: 120px;
+    height: 120px;
+}
+div.CurrentTrack {
+    color: rgb(16, 124, 16);
+}
+div.CurrentTrack::before {
+    font-family: "Segoe UI Symbol";
+    content: "▶ ";
+}
+div.MediaDecorator {
+    position: fixed;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(20, 20, 20, 0.9);
+}
+#TopDecorator {
+    top: 0;
+    /* Leave room around the edges of the screen to ensure we draw UI only in the TV-safe area */
+    padding: 54px 96px 15px 96px;
+}
+#BottomDecorator {
+    bottom: 0;
+    /* Leave room around the edges of the screen to ensure we draw UI only in the TV-safe area */
+    padding: 15px 96px 54px 96px;
+}
+#MediaControls {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+#Title {
+    font-weight: bold;
+    font-size: 28pt;
+}
+#ErrorMessage {
+    position: fixed;
+    width: 100%;
+    top: 50%;
+    right: 0;
+    transform: translate(0, -50%);
+    z-index: -1;
+    text-align: center;
+    vertical-align: middle;
+}
+#NowPlaying {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#Thumbnail {
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+    margin: 20px;
+}
+#Playlist {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgba(235, 235, 235, 0.25);
+    padding: 25px;
+    margin-top: 50px;
+}

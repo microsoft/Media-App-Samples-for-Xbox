@@ -1,0 +1,35 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+namespace NativeMediaPlayer
+{
+    /// <summary>
+    /// This is a helper class to wrap the metadata for a single audio track in a way that it
+    /// can be easily exposed to the JavaScript code.
+    /// </summary>
+    [default_interface]
+    runtimeclass TrackMetadata
+    {
+        TrackMetadata(String src, String title, String artist, String thumbnailSrc);
+
+        /// <summary>
+        /// Absolute URL to the audio file to play
+        /// </summary>
+        String Src;
+
+        /// <summary>
+        /// The title of the track
+        /// </summary>
+        String Title;
+
+        /// <summary>
+        /// The name of the artist for the track
+        /// </summary>
+        String Artist;
+
+        /// <summary>
+        /// URL to an image that can be used as a thumbnail for the track (such as album art)
+        /// </summary>
+        String ThumbnailSrc;
+    }
+}

@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33110.190
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JavaScriptVideoSample", "JavaScriptVideoSample\JavaScriptVideoSample.csproj", "{E7D20C0F-E952-47A6-BD6F-483246EA7E72}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WinRTAdapter", "WinRTAdapter\WinRTAdapter.vcxproj", "{112ABE3E-357D-4431-BE51-66A0C11C74AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsAPIProxies", "WindowsAPIProxies\WindowsAPIProxies.csproj", "{8BA5C40F-53CD-4D3B-9715-B7822BDD593F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B6DCE13C-9F69-496C-A13B-21476F20FA39}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E7D20C0F-E952-47A6-BD6F-483246EA7E72}.Debug|x64.ActiveCfg = Debug|x64
+		{E7D20C0F-E952-47A6-BD6F-483246EA7E72}.Debug|x64.Build.0 = Debug|x64
+		{E7D20C0F-E952-47A6-BD6F-483246EA7E72}.Debug|x64.Deploy.0 = Debug|x64
+		{E7D20C0F-E952-47A6-BD6F-483246EA7E72}.Release|x64.ActiveCfg = Release|x64
+		{E7D20C0F-E952-47A6-BD6F-483246EA7E72}.Release|x64.Build.0 = Release|x64
+		{E7D20C0F-E952-47A6-BD6F-483246EA7E72}.Release|x64.Deploy.0 = Release|x64
+		{112ABE3E-357D-4431-BE51-66A0C11C74AD}.Debug|x64.ActiveCfg = Debug|x64
+		{112ABE3E-357D-4431-BE51-66A0C11C74AD}.Debug|x64.Build.0 = Debug|x64
+		{112ABE3E-357D-4431-BE51-66A0C11C74AD}.Release|x64.ActiveCfg = Release|x64
+		{112ABE3E-357D-4431-BE51-66A0C11C74AD}.Release|x64.Build.0 = Release|x64
+		{8BA5C40F-53CD-4D3B-9715-B7822BDD593F}.Debug|x64.ActiveCfg = Debug|x64
+		{8BA5C40F-53CD-4D3B-9715-B7822BDD593F}.Debug|x64.Build.0 = Debug|x64
+		{8BA5C40F-53CD-4D3B-9715-B7822BDD593F}.Release|x64.ActiveCfg = Release|x64
+		{8BA5C40F-53CD-4D3B-9715-B7822BDD593F}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7C0CB73F-5E9A-457B-ADEB-1FC059B09CA8}
+	EndGlobalSection
+EndGlobal

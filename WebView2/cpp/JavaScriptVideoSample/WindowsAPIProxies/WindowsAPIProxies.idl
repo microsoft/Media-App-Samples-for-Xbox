@@ -1,0 +1,21 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+// Some Windows APIs can't be projected into JavaScript unaltered because they
+// can return on a background thread instead of the calling thread. This causes
+// a crash when they run in a JavaScript context. For more information, see:
+// https://learn.microsoft.com/en-us/microsoft-edge/webview2/concepts/threading-model
+// 
+// This file proxies those APIs in a way that they can be safely called from
+// JavaScript.
+namespace WindowsAPIProxies
+{
+    [default_interface]
+    static runtimeclass GraphicsDisplayProxies
+    {
+        /// Proxy that calls:
+        /// HdmiDisplayInformation.GetForCurrentView().RequestSetCurrentDisplayModeAsync(...)
+        static Windows.Foundation.IAsyncOperation<Boolean> RequestSetCurrentDisplayModeAsync(
+            Windows.Graphics.Display.Core.HdmiDisplayMode mode, Windows.Graphics.Display.Core.HdmiDisplayHdrOption hdrOption);
+    }
+}

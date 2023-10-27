@@ -1,0 +1,98 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+import "TrackMetadata.idl";
+
+namespace NativeMediaPlayer
+{
+    /// <summary>
+    /// This singleton object wraps a MediaPlayer in a way that it can be projected into
+    /// JavaScript. By handling playback in native code rather than inside the WebView2, we
+    /// are able to dispose of the WebView2 when the app enters the background while music
+    /// playback can continue uninterrupted. This allows the app to stay beneath the
+    /// background memory usage limit.
+    /// 
+    /// The WinRTAdapter project is responsible for converting classes into a format that
+    /// can be projected into JavaScript. In this sample, it is set up to adapt all classes
+    /// within the NativeMediaPlayer namespace. To add additional namespaces, right-click on
+    /// the WinRTAdapter project > Properties > Common Properties > WebView2, and edit the
+    /// "Include Filters" property. For additional information, see:
+    /// https://learn.microsoft.com/en-us/microsoft-edge/webview2/how-to/winrt-from-js
+    /// 
+    /// MainPage.cpp injects the singleton instance of this class into the WebView2 using
+    /// AddHostObjectToScript.
+    /// </summary>
+    [default_interface]
+    runtimeclass MediaPlaybackController
+    {
+        MediaPlaybackController();
+
+        // The list of songs in the current playlist
+        Windows.Foundation.Collections.IVector<TrackMetadata> CurrentPlaylist{ get; };
+
+        // The JavaScript code can check this property to retrieve the metadata for the currently playing track
+        TrackMetadata CurrentTrack{ get; };
+
+        // The index of the currently playing track in the CurrentPlaylist, or -1 if no track is currently playing
+        UInt32 CurrentTrackIndex{ get; };
+
+        // Whether or not the media player is in the paused state
+        Boolean Paused{ get; };
+
+        // Whether or not the media player has played the current source all the way through to completion
+        Boolean Ended{ get; };
+
+        // Whether or not the media player is currently muted
+        Boolean Muted;
+
+        // The current volume of the media player, a number between 0 and 1
+        Double Volume;
+
+        // The current playback position of the media player in its current track
+        Double CurrentTime;
+
+        // The total duration of the track currently being played by the media player
+        Double Duration{ get; };
+
+        // Causes the media player to start playback
+        void Play();
+
+        // Causes the media player to pause playback
+        void Pause();
+
+        // Switches to the previous track, if able
+        void SkipPrevious();
+
+        // Switches to the next track, if able                                                                                                                                                           
+        void SkipNext();
+
+        /// <summary>
+        /// Plays a particular track in a playlist.
+        /// 
+        /// Note that because this public function is exposed in a Windows Runtime Component, it
+        /// cannot return Task. Instead, we use an internal function which returns a Task and call
+        /// AsAsyncAction() on it.
+        /// </summary>
+        /// <param name="playlistId">The ID of the playlist that contains the track.</param>
+        /// <param name="trackId">
+        /// The ID of the track to start the playlist on.
+        /// If left null, the first track in the playlist will be used.
+        /// </param>
+        Windows.Foundation.IAsyncAction PlayTrackAsync(String playlistId, String trackId);
+
+        /// <summary>
+        /// Plays a particular playlist from the beginning. See also PlayTrack().
+        /// </summary>
+        /// <param name="playlistId">The ID of the playlist to play.</param>
+        Windows.Foundation.IAsyncAction PlayPlaylistAsync(String playlistId);
+
+        // Callback to let the JavaScript code know when to update its progress bar
+        event Windows.Foundation.TypedEventHandler<MediaPlaybackController, Object> TimeUpdate;
+
+        // Callback to let the JavaScript code know that the play state has changed
+        event Windows.Foundation.TypedEventHandler<MediaPlaybackController, Object> PlaybackUpdate;
+
+        // Callback to let the JavaScript code know that the current track has changed
+        event Windows.Foundation.TypedEventHandler<MediaPlaybackController, TrackMetadata> SourceUpdate;
+    }
+}

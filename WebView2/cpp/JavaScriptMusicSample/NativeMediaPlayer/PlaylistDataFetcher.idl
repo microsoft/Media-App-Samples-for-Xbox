@@ -1,0 +1,31 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+namespace NativeMediaPlayer
+{
+    /// <summary>
+    /// This class is responsible for retrieving playlist JSON data for use by the MediaPlaybackController.
+    /// 
+    /// In this sample, playlists are stored in static json files inside the app package, but they could
+    /// easily be pointed at web URLs which allow a server to construct them dynamically instead.
+    /// </summary>
+    [default_interface]
+    static runtimeclass PlaylistDataFetcher
+    {
+        /// <summary>
+        /// Returns JSON data describing all tracks in a particular playlist. See the playlistdata folder
+        /// in the main project for an example.
+        /// For this sample, the Id is simply its filename.
+        /// </summary>
+        /// <param name="playlistId">A unique identifier for the playlist to describe.</param>
+        static Windows.Foundation.IAsyncOperation<String> GetPlaylistTracks(String playlistId);
+
+        /// <summary>
+        /// Constructs a URI to a particular track, given its Id.
+        /// For this sample, the Id is simply its filename.
+        /// </summary>
+        /// <param name="trackId">A unique identifier for the track.</param>
+        /// <returns>A fully-qualified URI that can be used to access the track.</returns>
+        static String GetUriFromTrackId(String trackId);
+    }
+}

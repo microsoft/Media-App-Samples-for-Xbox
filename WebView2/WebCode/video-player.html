@@ -1,0 +1,286 @@
+﻿<!-- Copyright (c) Microsoft Corporation.
+     Licensed under the MIT License. -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset=utf-8>
+    <title>Web-based Video Player Sample</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+    <!-- This library allows an Xbox controller or the arrow keys to navigate the UI.
+         Source: https://github.com/Microsoft/TVHelpers -->
+    <script src="libs/directionalnavigation-1.0.0.0.js"></script>
+    <!-- This script aids in calling Windows APIs to query or set the monitor's display mode. -->
+    <script src="uwpdisplaymode.js"></script>
+    <script>
+        var videoPlaylist;
+        var mediaElement;
+        var playPauseBtn;
+        var resetBtn;
+        var currentVideoIndex = 0;
+        var videoIsChanging = false;
+
+        document.addEventListener("DOMContentLoaded", async function () {
+            mediaElement = document.getElementById("MediaElement");
+            playPauseBtn = document.getElementById("PlayPauseBtn");
+            resetBtn = document.getElementById("ResetBtn");
+
+            // Fetch the list of videos from the json file.
+            // Note that in this sample each video in the json file actually points to the same URL.
+            // This is for demonstration purposes only, to show how you might handle playback of
+            // different types of content.
+            const response = await fetch('./playlistdata/video-playlist.json');
+            videoPlaylist = await response.json();
+
+            // Update the UI to show the first video
+            await updateVideoAsync();
+
+            playPauseBtn.focus();
+            updateVolumeText();
+
+            console.log("Media player is ready");
+        });
+
+        // The directionalnavigation library included above ensures that gamepad button presses will
+        // fire keydown events. If you decide not to use that library, you'll need to additionally
+        // include this line to get keydown events from the gamepad:
+        // window.navigator.gamepadInputEmulation = "keyboard";
+        document.addEventListener("keydown", onKeyDown);
+
+        // Shows or hides the media name and controls
+        function setMediaControlsVisibility(shouldShow) {
+            let mediaChrome = document.getElementById("MediaChrome");
+            if (mediaChrome.hidden != !shouldShow) {
+                mediaChrome.hidden = !shouldShow;
+                if (shouldShow) {
+                    playPauseBtn.focus();
+                }
+            }
+        }
+
+        // Shows or hides the error message, disabling playback buttons when in an error state
+        function setErrorState(isError) {
+            let errorElement = document.getElementById("ErrorMessage");
+            mediaElement.hidden = isError;
+            errorElement.hidden = !isError;
+            playPauseBtn.disabled = isError;
+            resetBtn.disabled = isError;
+        }
+
+        // Sends a JSON message to the native wrapper code to notify it of state changes.
+        function notifyNativeWrapper(message, args = {}) {
+            let payload = {
+                "Message": message,
+                "Args": args
+            };
+            window.chrome.webview.postMessage(JSON.stringify(payload));
+        }
+
+        // Calls into WinRT APIs to set the display mode of the currently attached HDMI device.
+        // Returns true if the desired display mode could be set, false otherwise.
+        // In reality, each video in playlist-1.json points to the same URL, and it does not
+        // need any special modes at all. But this demonstrates how you might update the dislay
+        // mode if you had content which did require it.
+        async function setDisplayModeAsync(displayType) {
+            if (displayType === "dolbyVision4k") {
+                return await uwpDisplayMode.switchTVModeTo4KDVAsync();
+            } else if (displayType === "hdr4k") {
+                return await uwpDisplayMode.switchTVModeTo4KHDRAsync();
+            } else if (displayType === "sdr4k") {
+                return await uwpDisplayMode.switchTVModeTo4KSDRAsync();
+            } else if (displayType === "50hz") {
+                return await uwpDisplayMode.switchTVModeTo50HzAsync();
+            } else if (displayType === "fullhd") {
+                // Any display mode should work fine, make no changes
+                return true;
+            } else {
+                console.error(`Unrecognized display type: ${displayType}`);
+                return false;
+            }
+        }
+
+        // Update the display mode to match whatever the currently selected video needs.
+        // Show the video if successful, or an error if failed.
+        // This function can be called from the native code when the HDMI device changes.
+        async function updateDisplayModeAsync() {
+            let currentVideo = videoPlaylist.Videos[currentVideoIndex];
+            setErrorState(!await setDisplayModeAsync(currentVideo.DisplayType));
+        }
+
+        // Changes the video currently being shown in the UI to whichever one is pointed to by
+        // currentVideoIndex. The list of video data is found in playlistdata/playlist-1.json.
+        async function updateVideoAsync() {
+            try {
+                // This flag is used to disable the next/previous buttons temporarily
+                videoIsChanging = true;
+
+                // Update the UI to show the new video
+                let newVideo = videoPlaylist.Videos[currentVideoIndex];
+                let titleElement = document.getElementById("Title");
+                titleElement.innerText = `${newVideo.Title} (${newVideo.Subtitle})`;
+                mediaElement.src = newVideo.Url;
+
+                updatePlayPauseBtnText();
+
+                // Update the display mode. Show the video if successful, or an error if failed.
+                await updateDisplayModeAsync();
+
+                // Inform the native code of the change.
+                notifyNativeWrapper("VideoUpdate", {
+                    "Title": newVideo.Title,
+                    "Subtitle": newVideo.Subtitle
+                });
+            } finally {
+                videoIsChanging = false;
+            }
+        }
+
+        // Event handlers
+        // ----------------------
+        function onPlayStateChanged() {
+            setMediaControlsVisibility(mediaElement.paused || mediaElement.ended);
+            updatePlayPauseBtnText();
+            updateResetBtnText();
+
+            // Let the native code know that playback has changed so it can update the system.
+            if (mediaElement.ended) {
+                notifyNativeWrapper("PlaybackEnded");
+            } else if (mediaElement.paused) {
+                notifyNativeWrapper("PlaybackPaused");
+            } else {
+                notifyNativeWrapper("PlaybackStarted");
+            }
+        }
+        function onProgressChanged() {
+            let percent = 0;
+            if (mediaElement.duration > 0) {
+                percent = Math.floor((100 / mediaElement.duration) * mediaElement.currentTime);
+            }
+
+            let progressBar = document.getElementById("ProgressBar");
+            progressBar.value = percent;
+            progressBar.innerText = `${percent}%`;
+
+            // Inform the native code of the change in position as well.
+            if (mediaElement.duration > 0) {
+                notifyNativeWrapper("TimeUpdate", {
+                    "CurrentTime": mediaElement.currentTime,
+                    "Duration": mediaElement.duration
+                });
+            }
+        }
+        function onKeyDown(e) {
+            setMediaControlsVisibility(true);
+        }
+
+        // These functions are called when the user presses media control buttons
+        // ----------------------
+        function play() {
+            mediaElement.play();
+        }
+        function pause() {
+            mediaElement.pause();
+        }
+        function togglePlayPause() {
+            if (mediaElement.paused || mediaElement.ended) {
+                play();
+            } else {
+                pause();
+            }
+        }
+        function resetPlayback() {
+            mediaElement.pause();
+            mediaElement.currentTime = 0;
+            playPauseBtn.focus();
+            updateResetBtnText();
+        }
+        function addVolume(amount) {
+            // Clamp between 0 and 1
+            let newVolume = Math.max(0, Math.min(mediaElement.volume + amount, 1));
+            mediaElement.volume = parseFloat(newVolume).toFixed(1);
+            updateVolumeText();
+        }
+        function toggleMute() {
+            mediaElement.muted = !mediaElement.muted;
+            updateMuteBtnText();
+            updateVolumeText();
+        }
+        function previousVideo() {
+            // Prevent multiple simultaneous video switches
+            if (!videoIsChanging) {
+                currentVideoIndex--;
+                // Wrap around
+                if (currentVideoIndex < 0) {
+                    currentVideoIndex = videoPlaylist.Videos.length - 1;
+                }
+                updateVideoAsync();
+            }
+        }
+        function nextVideo() {
+            // Prevent multiple simultaneous video switches
+            if (!videoIsChanging) {
+                currentVideoIndex++;
+                // Wrap around
+                if (currentVideoIndex > (videoPlaylist.Videos.length - 1)) {
+                    currentVideoIndex = 0;
+                }
+                updateVideoAsync();
+            }
+        }
+
+        // Functions to update the text of controls to match the video state
+        // ----------------------
+        function updateResetBtnText() {
+            resetBtn.innerText = mediaElement.ended ? "" : "⏹";
+            resetBtn.title = mediaElement.ended ? "Restart" : "Stop";
+        }
+        function updatePlayPauseBtnText() {
+            playPauseBtn.innerText = (mediaElement.paused || mediaElement.ended) ? "▶" : "⏸";
+            playPauseBtn.title = (mediaElement.paused || mediaElement.ended) ? "Play" : "Pause";
+        }
+        function updateMuteBtnText() {
+            let muteBtn = document.getElementById("ToggleMuteBtn");
+            muteBtn.innerText = mediaElement.muted ? "" : "";
+            muteBtn.title = mediaElement.muted ? "Unmute" : "Mute";
+        }
+        function updateVolumeText() {
+            let volume = document.getElementById("Volume");
+            if (mediaElement.muted) {
+                volume.innerText = 0;
+            } else {
+                volume.innerText = parseFloat(mediaElement.volume * 100).toFixed(0);
+            }
+        }
+    </script>
+</head>
+<body>
+    <!-- For simplicity's sake, this sample uses a raw video tag. You could also use a third-party video library, such as dash.js, if you prefer. -->
+    <video id="MediaElement" preload="metadata" onplay="onPlayStateChanged()" onpause="onPlayStateChanged()" ontimeupdate="onProgressChanged()">
+        <source src="https://mediaplatstorage1.blob.core.windows.net/windows-universal-samples-media/sintel_trailer-480p.mp4" type="video/mp4">
+    </video>
+    <div id="ErrorMessage">Your television does not support the selected video.</div>
+    <div id="MediaChrome">
+        <div class="MediaDecorator" id="TopDecorator">
+            <div id="Title" />
+        </div>
+        <div class="MediaDecorator" id="BottomDecorator">
+            <progress id="ProgressBar" min="0" max="100" value="0">0%</progress>
+            <div id="MediaControls">
+                <div id="LeftControls">
+                    <button class="MediaButton" id="PrevBtn" title="Previous" onclick="previousVideo()"></button>
+                    <button class="MediaButton" id="PlayPauseBtn" title="Play" onclick="togglePlayPause()">▶</button>
+                    <button class="MediaButton" id="ResetBtn" title="Stop" onclick="resetPlayback()">⏹</button>
+                    <button class="MediaButton" id="NextBtn" title="Next" onclick="nextVideo()"></button>
+                </div>
+                <div id="RightControls">
+                    <span id="Volume">0</span>
+                    <button class="MediaButton" id="ToggleMuteBtn" title="Mute" onclick="toggleMute()"></button>
+                    <button class="MediaButton" id="VolumeUpBtn" title="Volume Up" onclick="addVolume(0.1)">➕</button>
+                    <button class="MediaButton" id="VolumeDownBtn" title="Volume Down" onclick="addVolume(-0.1)">➖</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

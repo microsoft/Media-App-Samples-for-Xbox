@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33403.182
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JavaScriptMusicSample", "JavaScriptMusicSample\JavaScriptMusicSample.vcxproj", "{9AA37284-6E8A-47D5-8DEF-6391E7624C5C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NativeMediaPlayer", "NativeMediaPlayer\NativeMediaPlayer.vcxproj", "{9D45B80F-B699-4A31-A7A2-DB8742A2EE7B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WinRTAdapter", "WinRTAdapter\WinRTAdapter.vcxproj", "{49E4470D-A60C-486E-B546-E096EC95C882}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{090DE6F0-156E-42E8-86DA-1261EBA7E75F}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9AA37284-6E8A-47D5-8DEF-6391E7624C5C}.Debug|x64.ActiveCfg = Debug|x64
+		{9AA37284-6E8A-47D5-8DEF-6391E7624C5C}.Debug|x64.Build.0 = Debug|x64
+		{9AA37284-6E8A-47D5-8DEF-6391E7624C5C}.Debug|x64.Deploy.0 = Debug|x64
+		{9AA37284-6E8A-47D5-8DEF-6391E7624C5C}.Release|x64.ActiveCfg = Release|x64
+		{9AA37284-6E8A-47D5-8DEF-6391E7624C5C}.Release|x64.Build.0 = Release|x64
+		{9AA37284-6E8A-47D5-8DEF-6391E7624C5C}.Release|x64.Deploy.0 = Release|x64
+		{9D45B80F-B699-4A31-A7A2-DB8742A2EE7B}.Debug|x64.ActiveCfg = Debug|x64
+		{9D45B80F-B699-4A31-A7A2-DB8742A2EE7B}.Debug|x64.Build.0 = Debug|x64
+		{9D45B80F-B699-4A31-A7A2-DB8742A2EE7B}.Release|x64.ActiveCfg = Release|x64
+		{9D45B80F-B699-4A31-A7A2-DB8742A2EE7B}.Release|x64.Build.0 = Release|x64
+		{49E4470D-A60C-486E-B546-E096EC95C882}.Debug|x64.ActiveCfg = Debug|x64
+		{49E4470D-A60C-486E-B546-E096EC95C882}.Debug|x64.Build.0 = Debug|x64
+		{49E4470D-A60C-486E-B546-E096EC95C882}.Release|x64.ActiveCfg = Release|x64
+		{49E4470D-A60C-486E-B546-E096EC95C882}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection	
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7D7BE14F-2D19-46B3-A5AE-0087F6BF4687}
+	EndGlobalSection
+EndGlobal

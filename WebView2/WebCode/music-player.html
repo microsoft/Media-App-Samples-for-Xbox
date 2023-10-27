@@ -1,0 +1,176 @@
+﻿<!-- Copyright (c) Microsoft Corporation.
+     Licensed under the MIT License. -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset=utf-8>
+    <title>Web-based Music Player Sample</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+    <!-- This library allows an Xbox controller or the arrow keys to navigate the UI.
+         Source: https://github.com/Microsoft/TVHelpers -->
+    <script src="libs/directionalnavigation-1.0.0.0.js"></script>
+    <script>
+        var playPauseBtn;
+
+        document.addEventListener("DOMContentLoaded", async function () {
+            playPauseBtn = document.getElementById("PlayPauseBtn");
+            playPauseBtn.focus();
+
+            // Hook up event listeners for state changes on the media player.
+            //
+            // The mediaPlaybackController object is created in a snippet of JavaScript code which
+            // is run on every page load. See the InitializeWebView() function in MainPage.xaml.cs
+            // for more details.
+            mediaPlaybackController.addEventListener("timeupdate", onProgressChanged);
+            mediaPlaybackController.addEventListener("playbackupdate", onPlayStateChanged);
+            mediaPlaybackController.addEventListener("sourceupdate", onSourceChanged);
+
+            // If the media player isn't playing anything at the moment, set it to a default playlist
+            if (!mediaPlaybackController.currentTrack) {
+                await mediaPlaybackController.playPlaylistAsync("music-playlist");
+            }
+
+            onProgressChanged();
+            updateResetBtnText();
+            updatePlayPauseBtnText();
+            updateMuteBtnText();
+            updateVolumeText();
+            updateMetadata();
+
+            console.log("Media player is ready");
+        });
+
+        // Event handlers
+        // ----------------------
+        function onPlayStateChanged() {
+            updatePlayPauseBtnText();
+            updateResetBtnText();
+        }
+        function onProgressChanged() {
+            let progressBar = document.getElementById("ProgressBar");
+            let percent = Math.floor((100 / mediaPlaybackController.duration) * mediaPlaybackController.currentTime);
+            if (isFinite(percent)) {
+                progressBar.value = percent;
+                progressBar.innerText = `${percent}%`;
+            }
+        }
+        function onSourceChanged() {
+            updateMetadata();
+        }
+
+        // These functions are called when the user presses media control buttons
+        // ----------------------
+        function togglePlayPause() {
+            if (mediaPlaybackController.paused || mediaPlaybackController.ended) {
+                mediaPlaybackController.play();
+            } else {
+                mediaPlaybackController.pause();
+            }
+        }
+        function resetPlayback() {
+            mediaPlaybackController.pause();
+            mediaPlaybackController.currentTime = 0;
+            playPauseBtn.focus();
+            updateResetBtnText();
+        }
+        function addVolume(amount) {
+            // Clamp between 0 and 1
+            let newVolume = Math.max(0, Math.min(mediaPlaybackController.volume + amount, 1));
+            mediaPlaybackController.volume = parseFloat(newVolume).toFixed(1);
+            updateVolumeText();
+        }
+        function toggleMute() {
+            mediaPlaybackController.muted = !mediaPlaybackController.muted;
+            updateMuteBtnText();
+            updateVolumeText();
+        }
+        function previousTrack() {
+            mediaPlaybackController.skipPrevious();
+        }
+        function nextTrack() {
+            mediaPlaybackController.skipNext();
+        }
+
+        // Functions to update the text of controls to match the video state
+        // ----------------------
+        function updateResetBtnText() {
+            let resetBtn = document.getElementById("ResetBtn");
+            resetBtn.innerText = mediaPlaybackController.ended ? "" : "⏹";
+            resetBtn.title = mediaPlaybackController.ended ? "Restart" : "Stop";
+        }
+        function updatePlayPauseBtnText() {
+            playPauseBtn.innerText = (mediaPlaybackController.paused || mediaPlaybackController.ended) ? "▶" : "⏸";
+            playPauseBtn.title = (mediaPlaybackController.paused || mediaPlaybackController.ended) ? "Play" : "Pause";
+        }
+        function updateMuteBtnText() {
+            let muteBtn = document.getElementById("ToggleMuteBtn");
+            muteBtn.innerText = mediaPlaybackController.muted ? "" : "";
+            muteBtn.title = mediaPlaybackController.muted ? "Unmute" : "Mute";
+        }
+        function updateVolumeText() {
+            let volume = document.getElementById("Volume");
+            if (mediaPlaybackController.muted) {
+                volume.innerText = 0;
+            } else {
+                volume.innerText = parseFloat(mediaPlaybackController.volume * 100).toFixed(0);
+            }
+        }
+        function updateMetadata() {
+            // Update current track info
+            if (mediaPlaybackController.currentTrack !== null) {
+                let titleDiv = document.getElementById("Title");
+                titleDiv.innerText = mediaPlaybackController.currentTrack.title + " by " + mediaPlaybackController.currentTrack.artist;
+                let thumbnail = document.getElementById("Thumbnail");
+                thumbnail.src = mediaPlaybackController.currentTrack.thumbnailSrc;
+            }
+            else {
+                let titleDiv = document.getElementById("Title");
+                titleDiv.innerText = "Null current track: " + mediaPlaybackController.tempStr;
+            }
+
+            // Update playlist
+            let playlist = document.getElementById("Playlist");
+            let playlistHTML = "";
+            if (mediaPlaybackController.currentPlaylist) {
+                for (let i = 0; i < mediaPlaybackController.currentPlaylist.length; i++) {
+                    let title = mediaPlaybackController.currentPlaylist[i].title;
+                    if (i == mediaPlaybackController.currentTrackIndex) {
+                        playlistHTML += `<div class="CurrentTrack">${title}</div>`;
+                    } else {
+                        playlistHTML += `<div>${title}</div>`;
+                    }
+                }
+            }
+            playlist.innerHTML = playlistHTML;
+        }
+    </script>
+</head>
+<body>
+    <div id="MediaChrome">
+        <div id="NowPlaying">
+            <div id="Title"></div>
+            <img id="Thumbnail" />
+        </div>
+        <div id="MusicControls">
+            <progress id="ProgressBar" min="0" max="100" value="0">0%</progress>
+            <div id="MediaControls">
+                <div id="LeftControls">
+                    <button class="MediaButton" id="PrevBtn" title="Previous" onclick="previousTrack()"></button>
+                    <button class="MediaButton" id="PlayPauseBtn" title="Play" onclick="togglePlayPause()">▶</button>
+                    <button class="MediaButton" id="ResetBtn" title="Stop" onclick="resetPlayback()">⏹</button>
+                    <button class="MediaButton" id="NextBtn" title="Next" onclick="nextTrack()"></button>
+                </div>
+                <div id="RightControls">
+                    <span id="Volume">0</span>
+                    <button class="MediaButton" id="ToggleMuteBtn" title="Mute" onclick="toggleMute()"></button>
+                    <button class="MediaButton" id="VolumeUpBtn" title="Volume Up" onclick="addVolume(0.1)">➕</button>
+                    <button class="MediaButton" id="VolumeDownBtn" title="Volume Down" onclick="addVolume(-0.1)">➖</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="Playlist" />
+</body>
+</html>

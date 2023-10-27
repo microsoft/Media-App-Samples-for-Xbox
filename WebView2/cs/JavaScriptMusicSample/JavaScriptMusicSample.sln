@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33110.190
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JavaScriptMusicSample", "JavaScriptMusicSample\JavaScriptMusicSample.csproj", "{4BCB7503-8719-40F0-A57D-A24C8265D7CF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NativeMediaPlayer", "NativeMediaPlayer\NativeMediaPlayer.csproj", "{462B8469-3E5E-4F4F-9617-B4E4AAA5AC11}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WinRTAdapter", "WinRTAdapter\WinRTAdapter.vcxproj", "{04FB75AC-E3C1-4171-8CD1-EB6F555EE297}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B30C0E9A-DF0D-40CA-9371-3F551314FE86}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4BCB7503-8719-40F0-A57D-A24C8265D7CF}.Debug|x64.ActiveCfg = Debug|x64
+		{4BCB7503-8719-40F0-A57D-A24C8265D7CF}.Debug|x64.Build.0 = Debug|x64
+		{4BCB7503-8719-40F0-A57D-A24C8265D7CF}.Debug|x64.Deploy.0 = Debug|x64
+		{4BCB7503-8719-40F0-A57D-A24C8265D7CF}.Release|x64.ActiveCfg = Release|x64
+		{4BCB7503-8719-40F0-A57D-A24C8265D7CF}.Release|x64.Build.0 = Release|x64
+		{4BCB7503-8719-40F0-A57D-A24C8265D7CF}.Release|x64.Deploy.0 = Release|x64
+		{462B8469-3E5E-4F4F-9617-B4E4AAA5AC11}.Debug|x64.ActiveCfg = Debug|x64
+		{462B8469-3E5E-4F4F-9617-B4E4AAA5AC11}.Debug|x64.Build.0 = Debug|x64
+		{462B8469-3E5E-4F4F-9617-B4E4AAA5AC11}.Release|x64.ActiveCfg = Release|x64
+		{462B8469-3E5E-4F4F-9617-B4E4AAA5AC11}.Release|x64.Build.0 = Release|x64
+		{04FB75AC-E3C1-4171-8CD1-EB6F555EE297}.Debug|x64.ActiveCfg = Debug|x64
+		{04FB75AC-E3C1-4171-8CD1-EB6F555EE297}.Debug|x64.Build.0 = Debug|x64
+		{04FB75AC-E3C1-4171-8CD1-EB6F555EE297}.Release|x64.ActiveCfg = Release|x64
+		{04FB75AC-E3C1-4171-8CD1-EB6F555EE297}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7419A137-0242-469D-9781-6912F2EE7A83}
+	EndGlobalSection
+EndGlobal

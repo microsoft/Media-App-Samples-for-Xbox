@@ -1,26 +1,14 @@
---- 
-description: "Sample showing how to build music and video apps using primarily web technologies for Xbox."
-languages: 
-  - csharp
-  - cplusplus
-  - javascript
-  - html
-name: "Media App Sample for Xbox"
-page_type: sample
-products: 
-  - xbox
-urlFragment: media-app-samples-for-xbox
----
+# Legacy samples
+
+The samples under the "Legacy" folder use the original WebView control. It is **strongly recommended** that you use the WebView2 versions of these samples instead for any new development.
 
 # Media App Samples for Xbox
 
-This project contains two sample apps, a video player and a music player. Both apps are meant to be run on Xbox, and both are built primarily in JavaScript and HTML, running in a thin native wrapper containing a full-screen WebView. Both apps have samples using either C# or C++ for the native portion; use whichever language you prefer.
+This project contains two samples, a video player and a music player. Both apps are meant to be run on Xbox, and both are built primarily in JavaScript and HTML, running in a thin C# wrapper containing a full-screen WebView. Both apps utilize a small JavaScript library which may be independently useful, redirectconsole-1.0.0.0.js, which aids in debugging JavaScript code running in a WebView in versions of Visual Studio greater than 2017.
 
-> Note - These samples are targeted and tested for Windows 11 (10.0; Build 22000), and Visual Studio 2022.
+> Note - These samples are targeted and tested for Windows 11 (10.0; Build 22000), and Visual Studio 2017. If you prefer, you can use project properties to retarget the project(s) to Windows 10, version 2104 (10.0; Build 20348).
 
 These samples run on the Universal Windows Platform (UWP). 
-
-![Video app screenshot](/Images/VideoAppScreenshot.png)
 
 ## Features
 
@@ -28,21 +16,22 @@ These samples highlight the following topics:
 
 * [UWP on Xbox One](https://docs.microsoft.com/windows/uwp/xbox-apps/)
 * [Media Playback](https://docs.microsoft.com/windows/uwp/audio-video-camera/media-playback)
-* [WebView2](https://learn.microsoft.com/en-us/microsoft-edge/webview2/concepts/overview-features-apis)
+* [WebView](https://docs.microsoft.com/uwp/api/Windows.UI.Xaml.Controls.WebView) ([Windows.UI.Xaml.Controls](https://docs.microsoft.com/uwp/api/windows.ui.xaml.controls))
 
 ## Universal Windows Platform development
 
 ### Prerequisites
 
-- Windows 11. Minimum: Windows 11, version 22H2 (updated Oct 2023).
-- [Windows SDK](https://developer.microsoft.com/windows/downloads/windows-sdk/). Minimum: Windows SDK version 10.0.22621 (Windows 11, version 22H2).
-- [Visual Studio 2022](https://visualstudio.microsoft.com/) You can use the free Visual Studio Community Edition to build and run Windows Universal Platform (UWP) apps.
+- Windows 10 or 11. Minimum: Windows 10, version 1809 (10.0; Build 17763), also known as the Windows 10 October 2018 Update.
+- [Windows SDK](https://developer.microsoft.com/windows/downloads/windows-sdk/). Minimum: Windows SDK version 10.0.17763.0 (Windows 10, version 1809).
+- [Visual Studio 2017](https://visualstudio.microsoft.com/vs/older-downloads/) You can use the free Visual Studio Community Edition to build and run Windows Universal Platform (UWP) apps. Visual Studio 2019 or 2022 can be used as well, but lack script debugging tools for WebView, so they are not recommended.
 
-To get the latest updates to Windows and the development tools, and to help shape their development, join the [Windows Insider Program](https://insider.windows.com).
+To get the latest updates to Windows and the development tools, and to help shape their development, join 
+the [Windows Insider Program](https://insider.windows.com).
 
 ## Running the samples
 
-You can simply hit Start Debugging (F5) to try this sample on your local machine.
+You can simply hit Start Debugging (F5) to try these samples on your local machine.
 
 To test the app on an Xbox, you will need to enable [Developer Mode on your Xbox](https://docs.microsoft.com/windows/uwp/xbox-apps/devkit-activation). Then you can configure Visual Studio to deploy to it as a Remote Machine:
 1. Right-click the main project in the Solution Explorer, and then select Properties.

@@ -1,0 +1,34 @@
+﻿{
+  "Videos": [
+    {
+      "Title": "Sintel Trailer",
+      "Subtitle": "HD Version",
+      "DisplayType": "fullhd",
+      "Url": "https://mediaplatstorage1.blob.core.windows.net/windows-universal-samples-media/sintel_trailer-480p.mp4"
+    },
+    {
+      "Title": "Sintel Trailer",
+      "Subtitle": "DolbyVision Version",
+      "DisplayType": "dolbyVision4k",
+      "Url": "https://mediaplatstorage1.blob.core.windows.net/windows-universal-samples-media/sintel_trailer-480p.mp4"
+    },
+    {
+      "Title": "Sintel Trailer",
+      "Subtitle": "HDR 4K Version",
+      "DisplayType": "hdr4k",
+      "Url": "https://mediaplatstorage1.blob.core.windows.net/windows-universal-samples-media/sintel_trailer-480p.mp4"
+    },
+    {
+      "Title": "Sintel Trailer",
+      "Subtitle": "SDR 4K Version",
+      "DisplayType": "sdr4k",
+      "Url": "https://mediaplatstorage1.blob.core.windows.net/windows-universal-samples-media/sintel_trailer-480p.mp4"
+    },
+    {
+      "Title": "Sintel Trailer",
+      "Subtitle": "50Hz Version",
+      "DisplayType": "50hz",
+      "Url": "https://mediaplatstorage1.blob.core.windows.net/windows-universal-samples-media/sintel_trailer-480p.mp4"
+    }
+  ]
+}
