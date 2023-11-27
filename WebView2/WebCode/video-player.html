@@ -42,10 +42,6 @@
             console.log("Media player is ready");
         });
 
-        // The directionalnavigation library included above ensures that gamepad button presses will
-        // fire keydown events. If you decide not to use that library, you'll need to additionally
-        // include this line to get keydown events from the gamepad:
-        // window.navigator.gamepadInputEmulation = "keyboard";
         document.addEventListener("keydown", onKeyDown);
 
         // Shows or hides the media name and controls
