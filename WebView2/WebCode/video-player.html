@@ -21,6 +21,11 @@
         var currentVideoIndex = 0;
         var videoIsChanging = false;
 
+        // In this sample, the native code passes the device type to the webview as a query string
+        // parameter. See the MainPage's InitializeWebView() method for details.
+        const urlParams = new URLSearchParams(window.location.search);
+        const deviceType = urlParams.get('deviceType');
+
         document.addEventListener("DOMContentLoaded", async function () {
             mediaElement = document.getElementById("MediaElement");
             playPauseBtn = document.getElementById("PlayPauseBtn");
@@ -32,6 +37,9 @@
             // different types of content.
             const response = await fetch('./playlistdata/video-playlist.json');
             videoPlaylist = await response.json();
+
+            // Set a blank poster image so the default poster doesn't show
+            mediaElement.poster = "poster.png";
 
             // Update the UI to show the first video
             await updateVideoAsync();
@@ -210,6 +218,14 @@
                 if (currentVideoIndex < 0) {
                     currentVideoIndex = videoPlaylist.Videos.length - 1;
                 }
+
+                let newVideo = videoPlaylist.Videos[currentVideoIndex];
+                if (newVideo.DisplayType.includes("4k") && deviceType.includes("Xbox One")) {
+                    // Xbox One does not support 4k video playback, so skip this one
+                    previousVideo();
+                    return;
+                }
+
                 updateVideoAsync();
             }
         }
@@ -221,6 +237,14 @@
                 if (currentVideoIndex > (videoPlaylist.Videos.length - 1)) {
                     currentVideoIndex = 0;
                 }
+
+                let newVideo = videoPlaylist.Videos[currentVideoIndex];
+                if (newVideo.DisplayType.includes("4k") && deviceType.includes("Xbox One")) {
+                    // Xbox One does not support 4k video playback, so skip this one
+                    nextVideo();
+                    return;
+                }
+
                 updateVideoAsync();
             }
         }

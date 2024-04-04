@@ -13,6 +13,7 @@ using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using Windows.System.Profile;
 
 namespace JavaScriptVideoSample
 {
@@ -76,6 +77,8 @@ namespace JavaScriptVideoSample
             smtc.IsPlayEnabled = true;
             smtc.IsPauseEnabled = true;
             smtc.IsStopEnabled = true;
+            smtc.IsNextEnabled = true;
+            smtc.IsPreviousEnabled = true;
             smtc.ButtonPressed += OnSMTCButtonPressed;
 
             // Hook up an event so that we can inform the JavaScript code when the HDMI display mode chages.
@@ -105,7 +108,7 @@ namespace JavaScriptVideoSample
         /// </summary>
         private async void InitializeWebView()
         {
-            // The WebView's background color can sometimes draw while a page is loading. Set it to
+            // The WebView XAML background color can sometimes show while a page is loading. Set it to
             // something that matches the app's color scheme so it does not produce a jarring flash.
             webView.Background = new SolidColorBrush(Color.FromArgb(255, 16, 16, 16));
 
@@ -113,6 +116,18 @@ namespace JavaScriptVideoSample
             var coreWV2 = webView.CoreWebView2;
             if (coreWV2 != null)
             {
+                // Change some settings on the WebView. Check the documentation for more options:
+                // https://learn.microsoft.com/en-us/dotnet/api/microsoft.web.webview2.core.corewebview2settings
+                coreWV2.Settings.AreDefaultContextMenusEnabled = false;
+                coreWV2.Settings.IsGeneralAutofillEnabled = false;
+                coreWV2.Settings.IsPasswordAutosaveEnabled = false;
+                coreWV2.Settings.IsStatusBarEnabled = false;
+                coreWV2.Settings.HiddenPdfToolbarItems = CoreWebView2PdfToolbarItems.None;
+
+                // This prevents the user from opening the DevTools with F12, it does not prevent you from
+                // attaching the Edge Dev Tools yourself.
+                coreWV2.Settings.AreDevToolsEnabled = false; 
+
                 // This creates a virtual URL which can be used to navigate the WebView to a local folder
                 // embedded within the app package. If your application uses entirely pages hosted on the
                 // web, you should remove this line.
@@ -158,8 +173,20 @@ namespace JavaScriptVideoSample
                 webView.NavigationStarting += OnNavigationStarting;
                 webView.NavigationCompleted += OnNavigationCompleted;
 
+                // Pass the device type as a query parameter. This data could be passed in other ways as
+                // well, such as by setting the UserAgent string in the WebView's CoreWebView2Settings,
+                // or as part of the call to AddScriptToExecuteOnDocumentCreatedAsync.
+                // Possible values for the DeviceForm include:
+                //   "Xbox One"
+                //   "Xbox One S"
+                //   "Xbox One X"
+                //   "Xbox Series S"
+                //   "Xbox Series X"
+                string deviceType = AnalyticsInfo.DeviceForm;
+                string queryString = $"?deviceType={deviceType}";
+
                 // This will cause the WebView to navigate to our initial page.
-                webView.Source = new Uri(initialUri);
+                webView.Source = new Uri(initialUri + queryString);
             }
             else
             {
@@ -388,6 +415,12 @@ namespace JavaScriptVideoSample
                             break;
                         case SystemMediaTransportControlsButton.Stop:
                             await webView.ExecuteScriptAsync("resetPlayback();");
+                            break;
+                        case SystemMediaTransportControlsButton.Next:
+                            await webView.ExecuteScriptAsync("nextVideo();");
+                            break;
+                        case SystemMediaTransportControlsButton.Previous:
+                            await webView.ExecuteScriptAsync("previousVideo();");
                             break;
                         default:
                             Debug.WriteLine($"Unsupported button pressed: {args.Button}");

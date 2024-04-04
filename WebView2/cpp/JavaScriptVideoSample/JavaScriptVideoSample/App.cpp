@@ -37,6 +37,20 @@ App::App()
 
     // On Xbox, this turns off the virtual cursor so your app can be driven by the gamepad
     RequiresPointerMode(ApplicationRequiresPointerMode::WhenRequested);
+
+    // Do not route media remote button presses to the WebView; handle them in native code instead.
+    // This is necessary because the way the WebView handles the button presses is inconsistent.
+    if (_putenv("WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--disable-features=HardwareMediaKeyHandling") == -1)
+    {
+        OutputDebugString(L"Unable to disable hardware media key handling.");
+	}
+
+    // The WebView's default draw color can sometimes show while a page is loading. Set it to
+    // something that matches the app's color scheme so it does not produce a jarring flash.
+    if (_putenv("WEBVIEW2_DEFAULT_BACKGROUND_COLOR=FF101010") == -1)
+    {
+        OutputDebugString(L"Unable to set WebView2 default background color.");
+    }
 }
 
 /// <summary>

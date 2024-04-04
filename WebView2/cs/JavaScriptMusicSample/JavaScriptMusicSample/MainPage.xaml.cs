@@ -79,7 +79,7 @@ namespace JavaScriptMusicSample
         /// </summary>
         private async void InitializeWebView()
         {
-            // The WebView's background color can sometimes draw while a page is loading. Set it to
+            // The WebView XAML background color can sometimes show while a page is loading. Set it to
             // something that matches the app's color scheme so it does not produce a jarring flash.
             webView.Background = new SolidColorBrush(Color.FromArgb(255, 16, 16, 16));
 
@@ -87,6 +87,18 @@ namespace JavaScriptMusicSample
             var coreWV2 = webView.CoreWebView2;
             if (coreWV2 != null)
             {
+                // Change some settings on the WebView. Check the documentation for more options:
+                // https://learn.microsoft.com/en-us/dotnet/api/microsoft.web.webview2.core.corewebview2settings
+                coreWV2.Settings.AreDefaultContextMenusEnabled = false;
+                coreWV2.Settings.IsGeneralAutofillEnabled = false;
+                coreWV2.Settings.IsPasswordAutosaveEnabled = false;
+                coreWV2.Settings.IsStatusBarEnabled = false;
+                coreWV2.Settings.HiddenPdfToolbarItems = CoreWebView2PdfToolbarItems.None;
+
+                // This prevents the user from opening the DevTools with F12, it does not prevent you from
+                // attaching the Edge Dev Tools yourself.
+                coreWV2.Settings.AreDevToolsEnabled = false;
+
                 // This creates a virtual URL which can be used to navigate the WebView to a local folder
                 // embedded within the app package. If your application uses entirely pages hosted on the
                 // web, you should remove this line.

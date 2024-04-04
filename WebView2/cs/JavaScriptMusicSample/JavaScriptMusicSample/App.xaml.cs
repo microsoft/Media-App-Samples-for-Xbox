@@ -55,6 +55,10 @@ namespace JavaScriptMusicSample
 
             // On Xbox, this turns off the virtual cursor so your app can be driven by the gamepad
             this.RequiresPointerMode = ApplicationRequiresPointerMode.WhenRequested;
+
+            // The WebView's default draw color can sometimes show while a page is loading. Set it to
+            // something that matches the app's color scheme so it does not produce a jarring flash.
+            Environment.SetEnvironmentVariable("WEBVIEW2_DEFAULT_BACKGROUND_COLOR", "FF101010");
         }
 
         /// <summary>

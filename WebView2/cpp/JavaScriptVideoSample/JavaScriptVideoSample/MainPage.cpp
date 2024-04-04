@@ -12,6 +12,7 @@
 #include <winrt/Windows.UI.ViewManagement.h>
 #include <winrt/Windows.UI.Xaml.Media.h>
 #include <winrt/Windows.System.h>
+#include <winrt/Windows.System.Profile.h>
 
 using namespace winrt::Microsoft::UI::Xaml::Controls;
 using namespace winrt::Microsoft::Web::WebView2::Core;
@@ -23,6 +24,7 @@ using namespace winrt::Windows::UI::Core;
 using namespace winrt::Windows::UI::ViewManagement;
 using namespace winrt::Windows::UI::Xaml;
 using namespace winrt::Windows::UI::Xaml::Media;
+using namespace winrt::Windows::System::Profile;
 using namespace winrt;
 
 namespace winrt::JavaScriptVideoSample::implementation
@@ -54,6 +56,8 @@ namespace winrt::JavaScriptVideoSample::implementation
         smtc.IsPlayEnabled(true);
         smtc.IsPauseEnabled(true);
         smtc.IsStopEnabled(true);
+        smtc.IsNextEnabled(true);
+        smtc.IsPreviousEnabled(true);
         smtc.ButtonPressed({ this, &MainPage::OnSMTCButtonPressed });
 
         // Hook up an event so that we can inform the JavaScript code when the HDMI display mode chages.
@@ -69,13 +73,26 @@ namespace winrt::JavaScriptVideoSample::implementation
     /// </summary>
     fire_and_forget MainPage::InitializeWebView()
     {
-        // The WebView's background color can sometimes draw while a page is loading. Set it to
+        // The WebView XAML background color can sometimes show while a page is loading. Set it to
         // something that matches the app's color scheme so it does not produce a jarring flash.
         webView.Background(SolidColorBrush(Windows::UI::ColorHelper::FromArgb(255, 16, 16, 16)));
 
         co_await webView.EnsureCoreWebView2Async();
         if (auto coreWV2{ webView.CoreWebView2() })
         {
+            // Change some settings on the WebView. Check the documentation for more options:
+            // https://learn.microsoft.com/en-us/dotnet/api/microsoft.web.webview2.core.corewebview2settings
+            auto settings = coreWV2.Settings();
+            settings.AreDefaultContextMenusEnabled(false);
+            settings.IsGeneralAutofillEnabled(false);
+            settings.IsPasswordAutosaveEnabled(false);
+            settings.IsStatusBarEnabled(false);
+            settings.HiddenPdfToolbarItems(CoreWebView2PdfToolbarItems::None);
+
+            // This prevents the user from opening the DevTools with F12, it does not prevent you from
+            // attaching the Edge Dev Tools yourself.
+            settings.AreDevToolsEnabled(false);
+
             // This creates a virtual URL which can be used to navigate the WebView to a local folder
             // embedded within the app package. If your application uses entirely pages hosted on the
             // web, you should remove this line.
@@ -105,24 +122,36 @@ namespace winrt::JavaScriptVideoSample::implementation
             // the projected APIs will behave and creates "Windows" and "WindowsProxies" objects
             // at the top level to make it easier to access these APIs.
             co_await coreWV2.AddScriptToExecuteOnDocumentCreatedAsync(
-                L"(() => {"
+            L"(() => {"
                 L"if (chrome && chrome.webview) {"
-                L"console.log('Setting up WinRT projection options');"
-                L"chrome.webview.hostObjects.options.defaultSyncProxy = true;"
-                L"chrome.webview.hostObjects.options.forceAsyncMethodMatches = [/Async$/,/AsyncWithSpeller$/];"
-                L"chrome.webview.hostObjects.options.ignoreMemberNotFoundError = true;"
-                L"window.Windows = chrome.webview.hostObjects.sync.Windows;"
-                L"window.WindowsProxies = chrome.webview.hostObjects.sync.WindowsAPIProxies;"
+                    L"console.log('Setting up WinRT projection options');"
+                    L"chrome.webview.hostObjects.options.defaultSyncProxy = true;"
+                    L"chrome.webview.hostObjects.options.forceAsyncMethodMatches = [/Async$/,/AsyncWithSpeller$/];"
+                    L"chrome.webview.hostObjects.options.ignoreMemberNotFoundError = true;"
+                    L"window.Windows = chrome.webview.hostObjects.sync.Windows;"
+                    L"window.WindowsProxies = chrome.webview.hostObjects.sync.WindowsAPIProxies;"
                 L"}"
-                L"})();");
+            L"})();");
 
             // Hook up the event handlers before setting the source so none of these events get missed.
             webView.WebMessageReceived({ this, &MainPage::OnWebMessageReceived });
             webView.NavigationStarting({ this, &MainPage::OnNavigationStarting });
             webView.NavigationCompleted({ this, &MainPage::OnNavigationCompleted });
 
+            // Pass the device type as a query parameter. This data could be passed in other ways as
+            // well, such as by setting the UserAgent string in the WebView's CoreWebView2Settings,
+            // or as part of the call to AddScriptToExecuteOnDocumentCreatedAsync.
+            // Possible values for the DeviceForm include:
+            //   "Xbox One"
+            //   "Xbox One S"
+            //   "Xbox One X"
+            //   "Xbox Series S"
+            //   "Xbox Series X"
+            hstring deviceType = AnalyticsInfo::DeviceForm();
+            hstring queryString = L"?deviceType=" + deviceType;
+
             // This will cause the WebView to navigate to our initial page.
-            webView.Source(Uri{initialUri});
+            webView.Source(Uri{ initialUri + queryString });
         }
         else
         {
@@ -384,6 +413,12 @@ namespace winrt::JavaScriptVideoSample::implementation
             case SystemMediaTransportControlsButton::Stop:
                 co_await webView.ExecuteScriptAsync(L"resetPlayback();");
                 break;
+            case SystemMediaTransportControlsButton::Next:
+                co_await webView.ExecuteScriptAsync(L"nextVideo();");
+				break;
+            case SystemMediaTransportControlsButton::Previous:
+				co_await webView.ExecuteScriptAsync(L"previousVideo();");
+				break;
             default:
                 hstring errStr = L"Unsupported button pressed: " + to_hstring(static_cast<int>(button));
                 OutputDebugString(errStr.c_str());
