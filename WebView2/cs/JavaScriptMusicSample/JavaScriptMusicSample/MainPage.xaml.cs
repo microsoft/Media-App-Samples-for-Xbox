@@ -35,7 +35,6 @@ namespace JavaScriptMusicSample
         public MainPage()
         {
             this.InitializeComponent();
-            this.Loaded += OnLoaded;
 
             // Never reuse the cached page because the model is designed to be unloaded and disposed
             this.NavigationCacheMode = NavigationCacheMode.Disabled;
@@ -49,28 +48,9 @@ namespace JavaScriptMusicSample
             // of the screen. (A buffer of approximately 80 pixels is ideal).
             ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
 
-            // By default, XAML apps are scaled up 2x on Xbox. This line disables that behavior, allowing the
-            // app to use the actual resolution of the device (1920 x 1080 pixels).
-            if (!ApplicationViewScaling.TrySetDisableLayoutScaling(true))
-            {
-                Debug.WriteLine("Error: Failed to disable layout scaling.");
-            }
-
             // Handle page unload events
             Unloaded += OnUnloaded;
-        }
 
-        /// <summary>
-        /// Called when the XAML page has finished loading.
-        /// We wait to initialize the WebView until this point because it can take a little time to load.
-        /// </summary>
-        /// <param name="sender">The page which completed loading.</param>
-        /// <param name="e">Details about the load operation.</param>
-        private void OnLoaded(object sender, RoutedEventArgs e)
-        {
-            // Create the WebView and point it at the initial URL to begin loading the app's UI.
-            // The WebView is not added to the XAML page until the NavigationCompleted event fires.
-            webView = new WebView2();
             InitializeWebView();
         }
 
@@ -79,12 +59,21 @@ namespace JavaScriptMusicSample
         /// </summary>
         private async void InitializeWebView()
         {
+            webView = new WebView2();
+
             // The WebView XAML background color can sometimes show while a page is loading. Set it to
             // something that matches the app's color scheme so it does not produce a jarring flash.
             webView.Background = new SolidColorBrush(Color.FromArgb(255, 16, 16, 16));
 
             await webView.EnsureCoreWebView2Async();
             var coreWV2 = webView.CoreWebView2;
+
+            // Add the WebView to the page, making it visible to the user. This must be done after
+            // EnsureCoreWebView2Async() has completed, because before that it is not capable of
+            // receiving focus.
+            this.Content = webView;
+            webView.Focus(FocusState.Programmatic);
+
             if (coreWV2 != null)
             {
                 // Change some settings on the WebView. Check the documentation for more options:
@@ -145,8 +134,11 @@ namespace JavaScriptMusicSample
         {
             // Drop references to the WebView so that it can be garbage collected
             // This allows our app to reduce its memory footprint
-            webView.NavigationCompleted -= OnNavigationCompleted;
-            webView.Close();
+            if (webView != null)
+            {
+                webView.NavigationCompleted -= OnNavigationCompleted;
+                webView.Close();
+            }
             this.Content = null;
             webView = null;
 
@@ -160,25 +152,11 @@ namespace JavaScriptMusicSample
         /// <param name="args">Details about the page which was loaded.</param>
         private void OnNavigationCompleted(WebView2 sender, CoreWebView2NavigationCompletedEventArgs args)
         {
-            // If we haven't done so yet, add the WebView to the page, making it visible to the user.
-            // We create it dynamically and wait for the first navigation to complete before doing so.
-            // This ensures that focus gets set on the WebView only after it is ready to receive it.
-            // Failing to do this can occasionally result in Gamepad input failing to route to your
-            // JavaScript code.
-            if (webView.Parent == null)
+            if (!args.IsSuccess)
             {
-                if (args.IsSuccess)
-                {
-                    // Replace the current contents of this page with the WebView
-                    this.Content = webView;
-                    webView.Focus(FocusState.Programmatic);
-                }
-                else
-                {
-                    // WebView navigation failed.
-                    // TODO: Show an error state
-                    Debug.WriteLine($"Initial WebView navigation failed with error status: {args.WebErrorStatus}");
-                }
+                // WebView navigation failed.
+                // TODO: Show an error state
+                Debug.WriteLine($"Initial WebView navigation failed with error status: {args.WebErrorStatus}");
             }
         }
     }

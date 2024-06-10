@@ -52,7 +52,6 @@ namespace JavaScriptVideoSample
         public MainPage()
         {
             this.InitializeComponent();
-            this.Loaded += OnLoaded;
 
             // By default, Xbox gives you a border around your content to help you keep it inside a "TV-safe"
             // area. This helps protect you from drawing too close to the edges of the screen where content may
@@ -63,13 +62,6 @@ namespace JavaScriptVideoSample
             // of the screen. Details can be found here:
             // https://docs.microsoft.com/en-us/windows/apps/design/devices/designing-for-tv#tv-safe-area
             ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
-
-            // By default, XAML apps are scaled up 2x on Xbox. This line disables that behavior, allowing the
-            // app to use the actual resolution of the device (1920 x 1080 pixels).
-            if (!ApplicationViewScaling.TrySetDisableLayoutScaling(true))
-            {
-                Debug.WriteLine("Error: Failed to disable layout scaling.");
-            }
 
             // Set up the SystemMediaTransportControls. At least IsPlayEnabled and IsPauseEnabled must be set
             // to true for the system to know how to properly tailor the user experience.
@@ -87,19 +79,7 @@ namespace JavaScriptVideoSample
             {
                 hdmiInfo.DisplayModesChanged += OnDisplayModeChanged;
             }
-        }
-
-        /// <summary>
-        /// Called when the XAML page has finished loading.
-        /// We wait to initialize the WebView until this point because it can take a little time to load.
-        /// </summary>
-        /// <param name="sender">The page which completed loading.</param>
-        /// <param name="e">Details about the load operation.</param>
-        private void OnLoaded(object sender, RoutedEventArgs e)
-        {
-            // Create the WebView and point it at the initial URL to begin loading the app's UI.
-            // The WebView is not added to the XAML page until the NavigationCompleted event fires.
-            webView = new WebView2();
+            
             InitializeWebView();
         }
 
@@ -108,12 +88,21 @@ namespace JavaScriptVideoSample
         /// </summary>
         private async void InitializeWebView()
         {
+            webView = new WebView2();
+
             // The WebView XAML background color can sometimes show while a page is loading. Set it to
             // something that matches the app's color scheme so it does not produce a jarring flash.
             webView.Background = new SolidColorBrush(Color.FromArgb(255, 16, 16, 16));
 
             await webView.EnsureCoreWebView2Async();
             var coreWV2 = webView.CoreWebView2;
+
+            // Add the WebView to the page, making it visible to the user. This must be done after
+            // EnsureCoreWebView2Async() has completed, because before that it is not capable of
+            // receiving focus.
+            this.Content = webView;
+            webView.Focus(FocusState.Programmatic);
+
             if (coreWV2 != null)
             {
                 // Change some settings on the WebView. Check the documentation for more options:
@@ -212,31 +201,16 @@ namespace JavaScriptVideoSample
         /// <param name="args">Details about the page which was loaded.</param>
         private void OnNavigationCompleted(WebView2 sender, CoreWebView2NavigationCompletedEventArgs args)
         {
-            // If we haven't done so yet, add the WebView to the page, making it visible to the user.
-            // We create it dynamically and wait for the first navigation to complete before doing so.
-            // This ensures that focus gets set on the WebView only after it is ready to receive it.
-            // Failing to do this can occasionally result in Gamepad input failing to route to your
-            // JavaScript code.
-            if (webView.Parent == null)
-            {
-                if (args.IsSuccess)
-                {
-                    // Replace the current contents of this page with the WebView
-                    this.Content = webView;
-                    webView.Focus(FocusState.Programmatic);
-                }
-                else
-                {
-                    // WebView navigation failed.
-                    // TODO: Show an error state
-                    Debug.WriteLine($"Initial WebView navigation failed with error status: {args.WebErrorStatus}");
-                }
-            }
-
             // Track whether or not the WebView is successfully navigated to a page.
             if (args.IsSuccess)
             {
                 isNavigatedToPage = true;
+            }
+            else
+            {
+                // WebView navigation failed.
+                // TODO: Show an error state
+                Debug.WriteLine($"Initial WebView navigation failed with error status: {args.WebErrorStatus}");
             }
         }
 

@@ -61,6 +61,9 @@
     <Filter Include="WebCode\playlistdata">
       <UniqueIdentifier>{519da66f-cbb7-420a-93c7-86220ce63aeb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="WebCode\subtitles">
+      <UniqueIdentifier>{876a9b84-f9b1-4ede-8e09-74ddb9d176df}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="PropertySheet.props" />
@@ -75,6 +78,9 @@
     </None>
     <None Include="..\..\..\WebCode\playlistdata\video-playlist.json">
       <Filter>WebCode\playlistdata</Filter>
+    </None>
+    <None Include="..\..\..\WebCode\subtitles\sintel_trailer_en.vtt">
+      <Filter>WebCode\subtitles</Filter>
     </None>
     <None Include="..\..\..\WebCode\libs\directionalnavigation-1.0.0.0.js">
       <Filter>WebCode\libs</Filter>

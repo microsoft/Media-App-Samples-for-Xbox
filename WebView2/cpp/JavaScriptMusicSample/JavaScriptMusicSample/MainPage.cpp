@@ -12,7 +12,6 @@
 #include <winrt/Windows.UI.ViewManagement.h>
 #include <winrt/Windows.UI.Xaml.Media.h>
 
-using namespace winrt;
 using namespace winrt::Microsoft::UI::Xaml::Controls;
 using namespace winrt::Microsoft::Web::WebView2::Core;
 using namespace winrt::Windows::Foundation;
@@ -20,6 +19,7 @@ using namespace winrt::Windows::UI::ViewManagement;
 using namespace winrt::Windows::UI::Xaml;
 using namespace winrt::Windows::UI::Xaml::Media;
 using namespace winrt::Windows::UI::Xaml::Navigation;
+using namespace winrt;
 
 namespace winrt::JavaScriptMusicSample::implementation
 {
@@ -27,7 +27,6 @@ namespace winrt::JavaScriptMusicSample::implementation
     {
         // Xaml objects should not call InitializeComponent during construction.
         // See https://github.com/microsoft/cppwinrt/tree/master/nuget#initializecomponent
-        Loaded({ this, &MainPage::OnLoaded });
 
         // Never reuse the cached page because the model is designed to be unloaded and disposed
         NavigationCacheMode(NavigationCacheMode::Disabled);
@@ -41,27 +40,9 @@ namespace winrt::JavaScriptMusicSample::implementation
         // of the screen. (A buffer of approximately 80 pixels is ideal).
         ApplicationView::GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode::UseCoreWindow);
 
-        // By default, XAML apps are scaled up 2x on Xbox. This line disables that behavior, allowing the
-        // app to use the actual resolution of the device (1920 x 1080 pixels).
-        if (!ApplicationViewScaling::TrySetDisableLayoutScaling(true))
-        {
-            OutputDebugString(L"Error: Failed to disable layout scaling.");
-        }
-
         // Handle page unload events
         Unloaded({ this, &MainPage::OnUnloaded });
-    }
 
-    /// <summary>
-    /// Called when the XAML page has finished loading.
-    /// We wait to initialize the WebView until this point because it can take a little time to load.
-    /// </summary>
-    /// <param name="e">Details about the load operation.</param>
-    void MainPage::OnLoaded(IInspectable const&, [[maybe_unused]] RoutedEventArgs const& e)
-    {
-        // Create the WebView and point it at the initial URL to begin loading the app's UI.
-        // The WebView is not added to the XAML page until the NavigationCompleted event fires.
-        webView = WebView2();
         InitializeWebView();
     }
 
@@ -70,13 +51,21 @@ namespace winrt::JavaScriptMusicSample::implementation
     /// </summary>
     fire_and_forget MainPage::InitializeWebView()
     {
+        webView = WebView2();
+
         // The WebView XAML background color can sometimes show while a page is loading. Set it to
         // something that matches the app's color scheme so it does not produce a jarring flash.
         webView.Background(SolidColorBrush(Windows::UI::ColorHelper::FromArgb(255, 16, 16, 16)));
 
         co_await webView.EnsureCoreWebView2Async();
-        auto coreWV2{ webView.CoreWebView2() };
-        if (coreWV2)
+
+        // Add the WebView to the page, making it visible to the user. This must be done after
+        // EnsureCoreWebView2Async() has completed, because before that it is not capable of
+        // receiving focus.
+        Content(webView);
+        webView.Focus(FocusState::Programmatic);
+
+        if (auto coreWV2{ webView.CoreWebView2() })
         {
             // Change some settings on the WebView. Check the documentation for more options:
             // https://learn.microsoft.com/en-us/dotnet/api/microsoft.web.webview2.core.corewebview2settings
@@ -139,8 +128,11 @@ namespace winrt::JavaScriptMusicSample::implementation
     {
         // Drop references to the WebView so that it can be destructed
         // This allows our app to reduce its memory footprint
-        webView.NavigationCompleted(navigationCompletedEventToken);
-        webView.Close();
+        if (webView != nullptr)
+        {
+            webView.NavigationCompleted(navigationCompletedEventToken);
+            webView.Close();
+        }
         Content(nullptr);
         webView = nullptr;
     }
@@ -151,25 +143,11 @@ namespace winrt::JavaScriptMusicSample::implementation
     /// <param name="args">Details about the page which was loaded.</param>
     void MainPage::OnNavigationCompleted(WebView2 const&, CoreWebView2NavigationCompletedEventArgs const& args)
     {
-        // If we haven't done so yet, add the WebView to the page, making it visible to the user.
-        // We create it dynamically and wait for the first navigation to complete before doing so.
-        // This ensures that focus gets set on the WebView only after it is ready to receive it.
-        // Failing to do this can occasionally result in Gamepad input failing to route to your
-        // JavaScript code.
-        if (webView.Parent() == nullptr)
+        if (!args.IsSuccess())
         {
-            if (args.IsSuccess())
-            {
-                // Replace the current contents of this page with the WebView
-                Content(webView);
-                webView.Focus(FocusState::Programmatic);
-            }
-            else
-            {
-                // WebView navigation failed.
-                // TODO: Show an error state
-                OutputDebugString(L"Initial WebView navigation failed with error status: " + static_cast<int>(args.WebErrorStatus()));
-            }
+            // WebView navigation failed.
+            // TODO: Show an error state
+            OutputDebugString(L"Initial WebView navigation failed with error status: " + static_cast<int>(args.WebErrorStatus()));
         }
     }
 }

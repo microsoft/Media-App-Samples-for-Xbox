@@ -43,6 +43,9 @@ button.MediaButton {
     width: 120px;
     height: 120px;
 }
+button.Off {
+    text-decoration: line-through;
+}
 div.CurrentTrack {
     color: rgb(16, 124, 16);
 }

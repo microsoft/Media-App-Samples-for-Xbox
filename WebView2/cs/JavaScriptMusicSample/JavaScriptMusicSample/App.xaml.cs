@@ -2,23 +2,14 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.System;
 using Windows.UI.Notifications;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 namespace JavaScriptMusicSample
@@ -59,6 +50,13 @@ namespace JavaScriptMusicSample
             // The WebView's default draw color can sometimes show while a page is loading. Set it to
             // something that matches the app's color scheme so it does not produce a jarring flash.
             Environment.SetEnvironmentVariable("WEBVIEW2_DEFAULT_BACKGROUND_COLOR", "FF101010");
+
+            // By default, XAML apps are scaled up 2x on Xbox. This line disables that behavior, allowing the
+            // app to use the actual resolution of the device (1920 x 1080 pixels).
+            if (!ApplicationViewScaling.TrySetDisableLayoutScaling(true))
+            {
+                Debug.WriteLine("Error: Failed to disable layout scaling.");
+            }
         }
 
         /// <summary>

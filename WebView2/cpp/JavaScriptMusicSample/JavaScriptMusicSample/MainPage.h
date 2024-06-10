@@ -26,7 +26,6 @@ namespace winrt::JavaScriptMusicSample::implementation
 
         winrt::event_token navigationCompletedEventToken{};
 
-        void OnLoaded(IInspectable const&, Windows::UI::Xaml::RoutedEventArgs const&);
         void OnUnloaded(IInspectable const&, Windows::UI::Xaml::RoutedEventArgs const&);
         void OnNavigationCompleted(Microsoft::UI::Xaml::Controls::WebView2 const&, Microsoft::Web::WebView2::Core::CoreWebView2NavigationCompletedEventArgs const&);
         fire_and_forget InitializeWebView();

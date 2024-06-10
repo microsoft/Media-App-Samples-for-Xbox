@@ -31,8 +31,6 @@ namespace winrt::JavaScriptVideoSample::implementation
 {
     MainPage::MainPage()
     {
-        Loaded({ this, &MainPage::OnLoaded });
-
         // By default, Xbox gives you a border around your content to help you keep it inside a "TV-safe"
         // area. This helps protect you from drawing too close to the edges of the screen where content may
         // not be visible due to physical variations in televisions.
@@ -42,13 +40,6 @@ namespace winrt::JavaScriptVideoSample::implementation
         // of the screen. Details can be found here:
         // https://docs.microsoft.com/en-us/windows/apps/design/devices/designing-for-tv#tv-safe-area
         ApplicationView::GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode::UseCoreWindow);
-
-        // By default, XAML apps are scaled up 2x on Xbox. This line disables that behavior, allowing the
-        // app to use the actual resolution of the device (1920 x 1080 pixels).
-        if (!ApplicationViewScaling::TrySetDisableLayoutScaling(true))
-        {
-            OutputDebugString(L"Error: Failed to disable layout scaling.");
-        }
 
         // Set up the SystemMediaTransportControls. At least IsPlayEnabled and IsPauseEnabled must be set
         // to true for the system to know how to properly tailor the user experience.
@@ -66,6 +57,8 @@ namespace winrt::JavaScriptVideoSample::implementation
         {
             hdmiInfo.DisplayModesChanged({ this, &MainPage::OnDisplayModeChanged });
         }
+
+        InitializeWebView();
     }
 
     /// <summary>
@@ -73,11 +66,20 @@ namespace winrt::JavaScriptVideoSample::implementation
     /// </summary>
     fire_and_forget MainPage::InitializeWebView()
     {
+        webView = WebView2();
+
         // The WebView XAML background color can sometimes show while a page is loading. Set it to
         // something that matches the app's color scheme so it does not produce a jarring flash.
         webView.Background(SolidColorBrush(Windows::UI::ColorHelper::FromArgb(255, 16, 16, 16)));
 
         co_await webView.EnsureCoreWebView2Async();
+
+        // Add the WebView to the page, making it visible to the user. This must be done after
+        // EnsureCoreWebView2Async() has completed, because before that it is not capable of
+        // receiving focus.
+        Content(webView);
+        webView.Focus(FocusState::Programmatic);
+
         if (auto coreWV2{ webView.CoreWebView2() })
         {
             // Change some settings on the WebView. Check the documentation for more options:
@@ -161,18 +163,6 @@ namespace winrt::JavaScriptVideoSample::implementation
     }
 
     /// <summary>
-    /// Called when the XAML page has finished loading.
-    /// We wait to initialize the WebView until this point because it can take a little time to load.
-    /// </summary>
-    void MainPage::OnLoaded(IInspectable const&, RoutedEventArgs const&)
-    {
-        // Create the WebView and point it at the initial URL to begin loading the app's UI.
-        // The WebView is not added to the XAML page until the NavigationCompleted event fires.
-        webView = WebView2();
-        InitializeWebView();
-    }
-
-    /// <summary>
     /// Called whenever the WebView begins navigating to a new page.
     /// </summary>
     void MainPage::OnNavigationStarting(WebView2 const&, CoreWebView2NavigationStartingEventArgs const&)
@@ -186,32 +176,17 @@ namespace winrt::JavaScriptVideoSample::implementation
     /// <param name="args">Details about the page which was loaded.</param>
     void MainPage::OnNavigationCompleted(WebView2 const&, CoreWebView2NavigationCompletedEventArgs const& args)
     {
-        // If we haven't done so yet, add the WebView to the page, making it visible to the user.
-        // We create it dynamically and wait for the first navigation to complete before doing so.
-        // This ensures that focus gets set on the WebView only after it is ready to receive it.
-        // Failing to do this can occasionally result in Gamepad input failing to route to your
-        // JavaScript code.
-        if (!webView.Parent())
-        {
-            if (args.IsSuccess())
-            {
-                // Replace the current contents of this page with the WebView
-                Content(webView);
-                webView.Focus(FocusState::Programmatic);
-            }
-            else
-            {
-                // WebView navigation failed.
-                // TODO: Show an error state
-                hstring errStr = L"Initial WebView navigation failed with error status: " + to_hstring(static_cast<int>(args.WebErrorStatus()));
-                OutputDebugString(errStr.c_str());
-            }
-        }
-
         // Track whether or not the WebView is successfully navigated to a page.
         if (args.IsSuccess())
         {
             isNavigatedToPage = true;
+        }
+        else
+        {
+            // WebView navigation failed.
+            // TODO: Show an error state
+            hstring errStr = L"Initial WebView navigation failed with error status: " + to_hstring(static_cast<int>(args.WebErrorStatus()));
+            OutputDebugString(errStr.c_str());
         }
     }
     

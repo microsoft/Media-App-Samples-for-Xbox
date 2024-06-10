@@ -2,24 +2,27 @@
 // Licensed under the MIT License.
 
 #include "pch.h"
-
 #include "App.h"
 #include "MainPage.h"
 #include <sstream>
 #include <winrt/Windows.Data.Xml.Dom.h>
 #include <winrt/Windows.System.h>
 #include <winrt/Windows.UI.Notifications.h>
+#include <winrt/Windows.UI.ViewManagement.h>
+
+using namespace winrt::JavaScriptMusicSample;
+using namespace winrt::JavaScriptMusicSample::implementation;
+using namespace winrt::Windows::UI::ViewManagement;
+using namespace winrt::Windows::ApplicationModel;
+using namespace winrt::Windows::ApplicationModel::Activation;
+using namespace winrt::Windows::Foundation;
+using namespace winrt::Windows::UI::Notifications;
+using namespace winrt::Windows::UI::Xaml;
+using namespace winrt::Windows::UI::Xaml::Controls;
+using namespace winrt::Windows::UI::Xaml::Navigation;
+using namespace winrt::Windows::System;
 using namespace winrt;
-using namespace Windows::ApplicationModel;
-using namespace Windows::ApplicationModel::Activation;
-using namespace Windows::Foundation;
-using namespace Windows::UI::Notifications;
-using namespace Windows::UI::Xaml;
-using namespace Windows::UI::Xaml::Controls;
-using namespace Windows::UI::Xaml::Navigation;
-using namespace Windows::System;
-using namespace JavaScriptMusicSample;
-using namespace JavaScriptMusicSample::implementation;
+
 
 /// <summary>
 /// Creates the singleton application object.  This is the first line of authored code
@@ -55,6 +58,13 @@ App::App()
     if (_putenv("WEBVIEW2_DEFAULT_BACKGROUND_COLOR=FF101010") == -1)
     {
         OutputDebugString(L"Unable to set WebView2 default background color.");
+    }
+
+    // By default, XAML apps are scaled up 2x on Xbox. This line disables that behavior, allowing the
+    // app to use the actual resolution of the device (1920 x 1080 pixels).
+    if (!ApplicationViewScaling::TrySetDisableLayoutScaling(true))
+    {
+        OutputDebugString(L"Error: Failed to disable layout scaling.");
     }
 }
 

@@ -105,7 +105,7 @@
       <Version>2.8.6</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Web.WebView2">
-      <Version>1.0.2420.47</Version>
+      <Version>1.0.2478.35</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
@@ -118,6 +118,9 @@
   <ItemGroup>
     <Content Include="..\..\..\WebCode\playlistdata\video-playlist.json">
       <Link>WebCode\playlistdata\video-playlist.json</Link>
+    </Content>
+    <Content Include="..\..\..\WebCode\subtitles\sintel_trailer_en.vtt">
+      <Link>WebCode\subtitles\sintel_trailer_en.vtt</Link>
     </Content>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">

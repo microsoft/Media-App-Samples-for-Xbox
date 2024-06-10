@@ -41,7 +41,6 @@ namespace winrt::JavaScriptVideoSample::implementation
         bool isNavigatedToPage = false;
 
         fire_and_forget InitializeWebView();
-        void OnLoaded(Windows::Foundation::IInspectable const&, Windows::UI::Xaml::RoutedEventArgs const&);
         void OnNavigationStarting(Microsoft::UI::Xaml::Controls::WebView2 const&, Microsoft::Web::WebView2::Core::CoreWebView2NavigationStartingEventArgs const&);
         void OnNavigationCompleted(Microsoft::UI::Xaml::Controls::WebView2 const&, Microsoft::Web::WebView2::Core::CoreWebView2NavigationCompletedEventArgs const&);
         void OnWebMessageReceived(Microsoft::UI::Xaml::Controls::WebView2 const&, Microsoft::Web::WebView2::Core::CoreWebView2WebMessageReceivedEventArgs const&);
