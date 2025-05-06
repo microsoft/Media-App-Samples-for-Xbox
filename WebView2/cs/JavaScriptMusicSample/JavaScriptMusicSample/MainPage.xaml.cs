@@ -6,6 +6,7 @@ using Microsoft.Web.WebView2.Core;
 using NativeMediaPlayer;
 using System;
 using System.Diagnostics;
+using Windows.System;
 using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -84,6 +85,12 @@ namespace JavaScriptMusicSample
                 coreWV2.Settings.IsStatusBarEnabled = false;
                 coreWV2.Settings.HiddenPdfToolbarItems = CoreWebView2PdfToolbarItems.None;
 
+                // This turns off SmartScreen, which can have some performance impact. This is ONLY safe
+                // to do if you are certain that your app will only ever visit trusted pages that you
+                // control. If there is a chance your app could end up browsing the open web, you should
+                // delete this line.
+                coreWV2.Settings.IsReputationCheckingRequired = false;
+
                 // This prevents the user from opening the DevTools with F12, it does not prevent you from
                 // attaching the Edge Dev Tools yourself.
                 coreWV2.Settings.AreDevToolsEnabled = false;
@@ -114,6 +121,8 @@ namespace JavaScriptMusicSample
 
                 // Hook up the event handlers before setting the source so none of these events get missed.
                 webView.NavigationCompleted += OnNavigationCompleted;
+                coreWV2.ProcessFailed += OnWebViewProcessFailed;
+                coreWV2.LaunchingExternalUriScheme += OnLaunchingExternalUriScheme;
 
                 // This will cause the WebView to navigate to our initial page
                 webView.Source = new Uri(initialUri);
@@ -158,6 +167,40 @@ namespace JavaScriptMusicSample
                 // TODO: Show an error state
                 Debug.WriteLine($"Initial WebView navigation failed with error status: {args.WebErrorStatus}");
             }
+        }
+
+        /// <summary>
+        /// Called whenever the WebView attempts to launch another app through a URI scheme.
+        /// The confirmation dialog cannot be navigated by the Xbox controller, so we reroute it to
+        /// use the native API instead.
+        /// </summary>
+        /// <param name="args">The details of the protocol launch.</param>
+        private async void OnLaunchingExternalUriScheme(CoreWebView2 sender, CoreWebView2LaunchingExternalUriSchemeEventArgs args)
+        {
+            // Cancel the default behavior of the WebView because we do not want it to show a dialog
+            args.Cancel = true;
+
+            // Launch the URI using the native API instead
+            await Launcher.LaunchUriAsync(new Uri(args.Uri));
+        }
+
+        /// <summary>
+        /// Called when one of the WebView processes fails. This implementation merely prints out the
+        /// details of the process failure to the console. If you have a telemetry system, you could
+        /// also capture this information for further analysis.
+        /// </summary>
+        /// <param name="args">Details about the failure.</param>
+        private void OnWebViewProcessFailed(CoreWebView2 sender, CoreWebView2ProcessFailedEventArgs args)
+        {
+            Debug.WriteLine("WebView Process failed:");
+            Debug.WriteLine($"* Exit Code: {args.ExitCode}");
+            Debug.WriteLine($"* Failure Source Module Path: {args.FailureSourceModulePath}");
+            Debug.WriteLine($"* Process Description: {args.ProcessDescription}");
+            Debug.WriteLine($"* Process Failed Kind: {args.ProcessFailedKind}");
+            Debug.WriteLine($"* Process Failed Reason: {args.Reason}");
+
+            // Note that there is additional frame information that can be found under
+            // FrameInfosForFailedProcess(), if relevant for your use case.
         }
     }
 }

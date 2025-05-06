@@ -13,6 +13,7 @@
 #include <winrt/Windows.UI.Xaml.Media.h>
 #include <winrt/Windows.System.h>
 #include <winrt/Windows.System.Profile.h>
+#include <sstream>
 
 using namespace winrt::Microsoft::UI::Xaml::Controls;
 using namespace winrt::Microsoft::Web::WebView2::Core;
@@ -24,6 +25,7 @@ using namespace winrt::Windows::UI::Core;
 using namespace winrt::Windows::UI::ViewManagement;
 using namespace winrt::Windows::UI::Xaml;
 using namespace winrt::Windows::UI::Xaml::Media;
+using namespace winrt::Windows::System;
 using namespace winrt::Windows::System::Profile;
 using namespace winrt;
 
@@ -91,6 +93,12 @@ namespace winrt::JavaScriptVideoSample::implementation
             settings.IsStatusBarEnabled(false);
             settings.HiddenPdfToolbarItems(CoreWebView2PdfToolbarItems::None);
 
+            // This turns off SmartScreen, which can have some performance impact. This is ONLY safe
+            // to do if you are certain that your app will only ever visit trusted pages that you
+            // control. If there is a chance your app could end up browsing the open web, you should
+            // delete this line.
+            settings.IsReputationCheckingRequired(false);
+
             // This prevents the user from opening the DevTools with F12, it does not prevent you from
             // attaching the Edge Dev Tools yourself.
             settings.AreDevToolsEnabled(false);
@@ -139,6 +147,8 @@ namespace winrt::JavaScriptVideoSample::implementation
             webView.WebMessageReceived({ this, &MainPage::OnWebMessageReceived });
             webView.NavigationStarting({ this, &MainPage::OnNavigationStarting });
             webView.NavigationCompleted({ this, &MainPage::OnNavigationCompleted });
+            coreWV2.ProcessFailed({ this, &MainPage::OnWebViewProcessFailed });
+            coreWV2.LaunchingExternalUriScheme({ this, &MainPage::OnLaunchingExternalUriScheme });
 
             // Pass the device type as a query parameter. This data could be passed in other ways as
             // well, such as by setting the UserAgent string in the WebView's CoreWebView2Settings,
@@ -158,7 +168,7 @@ namespace winrt::JavaScriptVideoSample::implementation
         else
         {
             // TODO: Show an error state
-            OutputDebugString(L"Unable to retrieve CoreWebView2");
+            OutputDebugString(L"Unable to retrieve CoreWebView2\n");
         }
     }
 
@@ -185,8 +195,9 @@ namespace winrt::JavaScriptVideoSample::implementation
         {
             // WebView navigation failed.
             // TODO: Show an error state
-            hstring errStr = L"Initial WebView navigation failed with error status: " + to_hstring(static_cast<int>(args.WebErrorStatus()));
-            OutputDebugString(errStr.c_str());
+            std::wostringstream strStream{};
+            strStream << L"Initial WebView navigation failed with error status: " << static_cast<int>(args.WebErrorStatus()) << std::endl;
+            OutputDebugString(strStream.str().c_str());
         }
     }
     
@@ -282,7 +293,7 @@ namespace winrt::JavaScriptVideoSample::implementation
             }
             else
             {
-                OutputDebugString(L"Missing CurrentTime or Duration argument with TimeUpdate message.");
+                OutputDebugString(L"Missing CurrentTime or Duration argument with TimeUpdate message.\n");
             }
         }
         else if (message == L"VideoUpdate" && args)
@@ -298,7 +309,7 @@ namespace winrt::JavaScriptVideoSample::implementation
             }
             else
             {
-                OutputDebugString(L"Missing Title with VideoUpdate message.");
+                OutputDebugString(L"Missing Title with VideoUpdate message.\n");
             }
             if (args.HasKey(L"Subtitle"))
             {
@@ -309,8 +320,9 @@ namespace winrt::JavaScriptVideoSample::implementation
         }
         else
         {
-            hstring errStr = L"Unexpected JSON message: " + message;
-            OutputDebugString(errStr.c_str());
+            std::wostringstream strStream{};
+            strStream << L"Unexpected JSON message:\n" << message.c_str() << std::endl;
+            OutputDebugString(strStream.str().c_str());
         }
     }
 
@@ -395,8 +407,9 @@ namespace winrt::JavaScriptVideoSample::implementation
 				co_await webView.ExecuteScriptAsync(L"previousVideo();");
 				break;
             default:
-                hstring errStr = L"Unsupported button pressed: " + to_hstring(static_cast<int>(button));
-                OutputDebugString(errStr.c_str());
+                std::wostringstream strStream{};
+                strStream << L"Unsupported button pressed: " << static_cast<int>(button) << std::endl;
+                OutputDebugString(strStream.str().c_str());
                 break;
             }
         }
@@ -412,7 +425,115 @@ namespace winrt::JavaScriptVideoSample::implementation
 
         // When the display changes (eg. the HDMI cable is plugged into a new device) ensure
         // the new device is in the correct mode for the current content.
-        OutputDebugString(L"Display mode has changed.");
+        OutputDebugString(L"Display mode has changed.\n");
         co_await webView.ExecuteScriptAsync(L"updateDisplayModeAsync();");
+    }
+
+    /// <summary>
+    /// Called whenever the WebView attempts to launch another app through a URI scheme.
+    /// The confirmation dialog cannot be navigated by the Xbox controller, so we reroute it to
+    /// use the native API instead.
+    /// </summary>
+    /// <param name="args">The details of the protocol launch.</param>
+    fire_and_forget MainPage::OnLaunchingExternalUriScheme(CoreWebView2 const&, CoreWebView2LaunchingExternalUriSchemeEventArgs const& args)
+    {
+        // Cancel the default behavior of the WebView because we do not want it to show a dialog
+        args.Cancel(true);
+
+        // Launch the URI using the native API instead
+        co_await Launcher::LaunchUriAsync(Uri(args.Uri()));
+    }
+
+    /// <summary>
+    /// Called when one of the WebView processes fails. This implementation merely prints out the
+    /// details of the process failure to the console. If you have a telemetry system, you could
+    /// also capture this information for further analysis.
+    /// </summary>
+    /// <param name="args">Details about the failure.</param>
+    void MainPage::OnWebViewProcessFailed(CoreWebView2 const&, CoreWebView2ProcessFailedEventArgs const& args)
+    {
+        std::wostringstream strStream{};
+        strStream << L"WebView Process failed:\n";
+        strStream << L"* Exit Code: " << args.ExitCode() << std::endl;
+        strStream << L"* Failure Source Module Path: " << args.FailureSourceModulePath().c_str() << std::endl;
+        strStream << L"* Process Description: " << args.ProcessDescription().c_str() << std::endl;
+
+        // Convert the process failed kind to a string
+        strStream << L"* Process Failed Kind: ";
+        CoreWebView2ProcessFailedKind kind = args.ProcessFailedKind();
+        switch (kind)
+        {
+        case CoreWebView2ProcessFailedKind::BrowserProcessExited:
+            strStream << L"Browser Process Exited";
+            break;
+        case CoreWebView2ProcessFailedKind::RenderProcessExited:
+            strStream << L"Render Process Exited";
+            break;
+        case CoreWebView2ProcessFailedKind::RenderProcessUnresponsive:
+            strStream << L"Render Process Unresponsive";
+            break;
+        case CoreWebView2ProcessFailedKind::FrameRenderProcessExited:
+            strStream << L"Frame Render Process Exited";
+            break;
+        case CoreWebView2ProcessFailedKind::UtilityProcessExited:
+            strStream << L"Utility Process Exited";
+            break;
+        case CoreWebView2ProcessFailedKind::SandboxHelperProcessExited:
+            strStream << L"Sandbox Helper Process Exited";
+            break;
+        case CoreWebView2ProcessFailedKind::GpuProcessExited:
+            strStream << L"GPU Process Exited";
+            break;
+        case CoreWebView2ProcessFailedKind::PpapiPluginProcessExited:
+            strStream << L"PPAPI Plugin Process Exited";
+            break;
+        case CoreWebView2ProcessFailedKind::PpapiBrokerProcessExited:
+            strStream << L"PPAPI Broker Process Exited";
+            break;
+        case CoreWebView2ProcessFailedKind::UnknownProcessExited:
+            strStream << L"Unknown Process Exited";
+            break;
+        default:
+            strStream << L"Unknown Process Failed Kind: " << static_cast<int>(kind);
+            break;
+        }
+        strStream << std::endl;
+
+        // Convert the failure reason to a string
+        strStream << L"Process Failed Reason: ";
+        CoreWebView2ProcessFailedReason reason = args.Reason();
+        switch (reason)
+        {
+        case CoreWebView2ProcessFailedReason::Unexpected:
+            strStream << L"Unexpected";
+            break;
+        case CoreWebView2ProcessFailedReason::Unresponsive:
+            strStream << L"Unresponsive";
+            break;
+        case CoreWebView2ProcessFailedReason::Terminated:
+            strStream << L"Terminated";
+            break;
+        case CoreWebView2ProcessFailedReason::Crashed:
+            strStream << L"Crashed";
+            break;
+        case CoreWebView2ProcessFailedReason::LaunchFailed:
+            strStream << L"Launch Failed";
+            break;
+        case CoreWebView2ProcessFailedReason::OutOfMemory:
+            strStream << L"Out of Memory";
+            break;
+        case CoreWebView2ProcessFailedReason::ProfileDeleted:
+            strStream << L"Profile Deleted"; // This reason is deprecated
+            break;
+        default:
+            strStream << L"Unknown reason: " << static_cast<int>(reason);
+            break;
+        }
+        strStream << std::endl;
+
+        // Note that there is additional frame information that can be found under
+        // FrameInfosForFailedProcess(), if relevant for your use case.
+
+        OutputDebugString(strStream.str().c_str());
     }
 }

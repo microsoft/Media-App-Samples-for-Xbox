@@ -46,6 +46,8 @@ namespace winrt::JavaScriptVideoSample::implementation
         void OnWebMessageReceived(Microsoft::UI::Xaml::Controls::WebView2 const&, Microsoft::Web::WebView2::Core::CoreWebView2WebMessageReceivedEventArgs const&);
         void OnSMTCButtonPressed(Windows::Media::SystemMediaTransportControls const&, Windows::Media::SystemMediaTransportControlsButtonPressedEventArgs const&);
         void OnDisplayModeChanged(Windows::Graphics::Display::Core::HdmiDisplayInformation const&, Windows::Foundation::IInspectable const&);
+        fire_and_forget OnLaunchingExternalUriScheme(winrt::Microsoft::Web::WebView2::Core::CoreWebView2 const&, Microsoft::Web::WebView2::Core::CoreWebView2LaunchingExternalUriSchemeEventArgs const&);
+        void OnWebViewProcessFailed(winrt::Microsoft::Web::WebView2::Core::CoreWebView2 const&, Microsoft::Web::WebView2::Core::CoreWebView2ProcessFailedEventArgs const&);
 
         void HandleJsonNotification(Windows::Data::Json::JsonObject const& json);
         void UpdatePlaybackProgress(double currentTime, double duration);

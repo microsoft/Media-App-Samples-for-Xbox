@@ -271,6 +271,14 @@
             subtitles.mode = subtitles.mode === "showing" ? "hidden" : "showing";
             updateSubtitlesText();
         }
+        function openStore() {
+            // This is just a sample store page to demonstrate protocol launching.
+            // Note that if you want to request ratings for your app, you should use the
+            // StoreContext.RequestRateAndReviewAppAsync native API instead of launching the store
+            // page directly. See:
+            // https://learn.microsoft.com/en-us/windows/uwp/monetize/request-ratings-and-reviews
+            window.location.href = "ms-windows-store://pdp/?ProductId=9MV0B5HZVK9Z";
+        }
 
         // Functions to update the text of controls to match the video state
         // ----------------------
@@ -330,7 +338,9 @@
                     <button class="MediaButton" id="ToggleMuteBtn" title="Mute" onclick="toggleMute()"></button>
                     <button class="MediaButton" id="VolumeUpBtn" title="Volume Up" onclick="addVolume(0.1)">➕</button>
                     <button class="MediaButton" id="VolumeDownBtn" title="Volume Down" onclick="addVolume(-0.1)">➖</button>
+                    <span>|</span>
                     <button class="MediaButton" id="ToggleSubtitlesBtn" title="Show Subtitles" onclick="toggleSubtitles()"></button>
+                    <button class="MediaButton" id="OpenStore" title="Open Store" onclick="openStore()">🛒</button>
                 </div>
             </div>
         </div>
