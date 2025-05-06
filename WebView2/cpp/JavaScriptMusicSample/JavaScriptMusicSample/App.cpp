@@ -57,14 +57,14 @@ App::App()
     // something that matches the app's color scheme so it does not produce a jarring flash.
     if (_putenv("WEBVIEW2_DEFAULT_BACKGROUND_COLOR=FF101010") == -1)
     {
-        OutputDebugString(L"Unable to set WebView2 default background color.");
+        OutputDebugString(L"Unable to set WebView2 default background color.\n");
     }
 
     // By default, XAML apps are scaled up 2x on Xbox. This line disables that behavior, allowing the
     // app to use the actual resolution of the device (1920 x 1080 pixels).
     if (!ApplicationViewScaling::TrySetDisableLayoutScaling(true))
     {
-        OutputDebugString(L"Error: Failed to disable layout scaling.");
+        OutputDebugString(L"Error: Failed to disable layout scaling.\n");
     }
 }
 

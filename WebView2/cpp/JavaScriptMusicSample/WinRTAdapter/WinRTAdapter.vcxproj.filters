@@ -23,4 +23,7 @@
   <ItemGroup>
     <None Include="PropertySheet.props" />
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
+  </ItemGroup>
 </Project>

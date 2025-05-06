@@ -43,21 +43,21 @@ App::App()
     // This is necessary because the way the WebView handles the button presses is inconsistent.
     if (_putenv("WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--disable-features=HardwareMediaKeyHandling") == -1)
     {
-        OutputDebugString(L"Unable to disable hardware media key handling.");
+        OutputDebugString(L"Unable to disable hardware media key handling.\n");
 	}
 
     // The WebView's default draw color can sometimes show while a page is loading. Set it to
     // something that matches the app's color scheme so it does not produce a jarring flash.
     if (_putenv("WEBVIEW2_DEFAULT_BACKGROUND_COLOR=FF101010") == -1)
     {
-        OutputDebugString(L"Unable to set WebView2 default background color.");
+        OutputDebugString(L"Unable to set WebView2 default background color.\n");
     }
 
     // By default, XAML apps are scaled up 2x on Xbox. This line disables that behavior, allowing the
     // app to use the actual resolution of the device (1920 x 1080 pixels).
     if (!ApplicationViewScaling::TrySetDisableLayoutScaling(true))
     {
-        OutputDebugString(L"Error: Failed to disable layout scaling.");
+        OutputDebugString(L"Error: Failed to disable layout scaling.\n");
     }
 }
 

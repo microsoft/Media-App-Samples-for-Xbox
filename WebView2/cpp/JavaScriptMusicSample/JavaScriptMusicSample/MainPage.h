@@ -26,9 +26,11 @@ namespace winrt::JavaScriptMusicSample::implementation
 
         winrt::event_token navigationCompletedEventToken{};
 
+        fire_and_forget InitializeWebView();
         void OnUnloaded(IInspectable const&, Windows::UI::Xaml::RoutedEventArgs const&);
         void OnNavigationCompleted(Microsoft::UI::Xaml::Controls::WebView2 const&, Microsoft::Web::WebView2::Core::CoreWebView2NavigationCompletedEventArgs const&);
-        fire_and_forget InitializeWebView();
+        fire_and_forget OnLaunchingExternalUriScheme(winrt::Microsoft::Web::WebView2::Core::CoreWebView2 const&, Microsoft::Web::WebView2::Core::CoreWebView2LaunchingExternalUriSchemeEventArgs const&);
+		void OnWebViewProcessFailed(winrt::Microsoft::Web::WebView2::Core::CoreWebView2 const&, Microsoft::Web::WebView2::Core::CoreWebView2ProcessFailedEventArgs const&);
     };
 }
 
