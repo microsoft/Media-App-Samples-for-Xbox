@@ -43,6 +43,9 @@
             // Set a blank poster image so the default poster doesn't show
             mediaElement.poster = "poster.png";
 
+            // Don't show streaming button
+            mediaElement.disableRemotePlayback = true;
+
             // Update the UI to show the first video
             await updateVideoAsync();
 

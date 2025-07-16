@@ -91,7 +91,6 @@ namespace winrt::JavaScriptVideoSample::implementation
             settings.IsGeneralAutofillEnabled(false);
             settings.IsPasswordAutosaveEnabled(false);
             settings.IsStatusBarEnabled(false);
-            settings.HiddenPdfToolbarItems(CoreWebView2PdfToolbarItems::None);
 
             // This turns off SmartScreen, which can have some performance impact. This is ONLY safe
             // to do if you are certain that your app will only ever visit trusted pages that you
@@ -455,7 +454,6 @@ namespace winrt::JavaScriptVideoSample::implementation
         std::wostringstream strStream{};
         strStream << L"WebView Process failed:\n";
         strStream << L"* Exit Code: " << args.ExitCode() << std::endl;
-        strStream << L"* Failure Source Module Path: " << args.FailureSourceModulePath().c_str() << std::endl;
         strStream << L"* Process Description: " << args.ProcessDescription().c_str() << std::endl;
 
         // Convert the process failed kind to a string
