@@ -173,14 +173,20 @@ var uwpDisplayMode = (function (Windows, WindowsProxies) {
     // https://learn.microsoft.com/en-us/uwp/api/windows.media.protection.protectioncapabilities.istypesupported
     public.isTypeSupportedAsync = async function (type) {
         try {
+            // This string checks for PlayReady SL3000 (hardware) support. Your app must
+            // specify the hevcPlayback capability in its appxmanifest file to use SL3000.
+            // If you only need SL2000, use "com.microsoft.playready.recommendation" instead.
+            // For more information see:
+            // https://learn.microsoft.com/en-us/playready/overview/key-system-strings
+            let playReadyVersion = "com.microsoft.playready.recommendation.3000";
             let protCap = Windows.Media.Protection.ProtectionCapabilities();
-            let result = protCap.isTypeSupported(type, "com.microsoft.playready.hardware");
+            let result = protCap.isTypeSupported(type, playReadyVersion);
 
             // Continue checking until we get a non-maybe result. This API will not return
             // "maybe" for more than 10 seconds.
             while (result == Windows.Media.Protection.ProtectionCapabilityResult.maybe) {
                 await new Promise(r => setTimeout(r, 100));
-                result = protCap.isTypeSupported(type, "com.microsoft.playready.hardware");
+                result = protCap.isTypeSupported(type, playReadyVersion);
             }
 
             return (result != Windows.Media.Protection.ProtectionCapabilityResult.notSupported);

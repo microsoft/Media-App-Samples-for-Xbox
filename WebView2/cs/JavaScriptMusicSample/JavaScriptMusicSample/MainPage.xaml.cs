@@ -83,7 +83,6 @@ namespace JavaScriptMusicSample
                 coreWV2.Settings.IsGeneralAutofillEnabled = false;
                 coreWV2.Settings.IsPasswordAutosaveEnabled = false;
                 coreWV2.Settings.IsStatusBarEnabled = false;
-                coreWV2.Settings.HiddenPdfToolbarItems = CoreWebView2PdfToolbarItems.None;
 
                 // This turns off SmartScreen, which can have some performance impact. This is ONLY safe
                 // to do if you are certain that your app will only ever visit trusted pages that you
@@ -194,7 +193,6 @@ namespace JavaScriptMusicSample
         {
             Debug.WriteLine("WebView Process failed:");
             Debug.WriteLine($"* Exit Code: {args.ExitCode}");
-            Debug.WriteLine($"* Failure Source Module Path: {args.FailureSourceModulePath}");
             Debug.WriteLine($"* Process Description: {args.ProcessDescription}");
             Debug.WriteLine($"* Process Failed Kind: {args.ProcessFailedKind}");
             Debug.WriteLine($"* Process Failed Reason: {args.Reason}");
