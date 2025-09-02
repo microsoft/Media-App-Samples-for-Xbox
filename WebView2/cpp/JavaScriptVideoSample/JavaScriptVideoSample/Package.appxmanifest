@@ -29,12 +29,11 @@
   <Capabilities>
     <Capability Name="internetClient" />
     <!-- The "hevcPlayback" capability grants the app the ability to play 4K video content on Xbox.
-         This sample doesn't actually play any 4K content; the capability is listed here for
-         demonstration purposes. If your app does not play 4K content, you should delete this line
-         from the manifest.
-         
-         Usage of this capability requires approval from Microsoft. Work with your Microsoft
-         business representative if you need this capability.
+         This sample doesn't actually play any 4K content, but for apps that are primarily used to
+         play video content, it is recommended that you include this capability to make use of the
+         expanded graphics memory.
+         For more details on tradeoffs of using this capability, see:
+         https://learn.microsoft.com/en-us/windows/uwp/audio-video-camera/hevc-xbox
     -->
     <rescap:Capability Name="hevcPlayback" />
     <!-- This capability grants the app the ability to play PlayReady content. This sample doesn't

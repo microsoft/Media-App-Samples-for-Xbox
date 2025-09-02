@@ -319,9 +319,7 @@
 </head>
 <body>
     <!-- For simplicity's sake, this sample uses a raw video tag. You could also use a third-party video library, such as dash.js, if you prefer. -->
-    <video id="MediaElement" preload="metadata" onplay="onPlayStateChanged()" onpause="onPlayStateChanged()" ontimeupdate="onProgressChanged()">
-        <source src="https://mediaplatstorage1.blob.core.windows.net/windows-universal-samples-media/sintel_trailer-480p.mp4" type="video/mp4">
-    </video>
+    <video id="MediaElement" onplay="onPlayStateChanged()" onpause="onPlayStateChanged()" ontimeupdate="onProgressChanged()" src="https://sampleassets.z5.web.core.windows.net/windows-universal-samples-media/sintel_trailer-480p.mp4"></video>
     <div id="ErrorMessage" hidden="true">Your television does not support the selected video.</div>
     <div id="MediaChrome">
         <div class="MediaDecorator" id="TopDecorator">
